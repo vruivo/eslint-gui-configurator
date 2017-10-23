@@ -28,15 +28,15 @@ module.exports = function schemaReader(schema) {
       readBoolean(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'object') {
-      readObject(schema_param);
+      // readObject(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'array') {
       readArray(schema_param);
     }
-    else if (schema_param.oneOf) {
+    else if (schema_param.oneOf) {    // choose 1
       // do nothing for now
     }
-    else if (schema_param.anyOf) {
+    else if (schema_param.anyOf) {    // 0 or 1
       // do nothing for now
     }
     else if (schema_param.type && schema_param.type === 'integer') {
@@ -61,14 +61,12 @@ module.exports = function schemaReader(schema) {
   // ------------- base types ----------
   function readEnum(param) {
     if (Array.isArray(param)) {  // enum: one from the list
-      //if (!rule.set) rule.set = {};
-      //rule.set._one_of = param;
-      return 1;
+      return { oneOf: param};
     }
   }
 
   function readBoolean(param) {
-    return 1;
+    return param;
   }
 
   function readObject(param) {
@@ -97,7 +95,20 @@ module.exports = function schemaReader(schema) {
   }
 
   function readArray(param) {
-    //
+    if (param.items == null) {
+      throw 'Array without items';
+    }
+
+    // for (let prop in param.properties) {
+    //   //console.log(prop + '   ' + JSON.stringify(param.properties[prop], null, 3));
+    //   readParameter(param.properties[prop]);
+    // }
+
+    // check for unknown parameters
+    for (var key in param) {
+      if (key !== 'minItems' && key !== 'maxItems') {
+        throw 'Unknown parameter in array';
+      }
   }
 
 };
