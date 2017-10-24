@@ -21,32 +21,35 @@ module.exports = function schemaReader(schema) {
 
   // -----------------------------
   function readParameter(schema_param) {
+    if (schema_param == null)
+      throw 'schema param is undefined'
+
     if (schema_param.enum) {
-      readEnum(schema_param.enum);
+      readEnum(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'boolean') {
       readBoolean(schema_param);
     }
+    else if (schema_param.type && schema_param.type === 'integer') {
+      readInteger(schema_param);
+    }
+    else if (schema_param.type && schema_param.type === 'number') {
+      readNumber(schema_param);
+    }
+    else if (schema_param.type && schema_param.type === 'string') {
+      readString(schema_param);
+    }
     else if (schema_param.type && schema_param.type === 'object') {
-      // readObject(schema_param);
+      readObject(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'array') {
       readArray(schema_param);
     }
     else if (schema_param.oneOf) {    // choose 1
-      // do nothing for now
+      readOneOf(schema_param);
     }
     else if (schema_param.anyOf) {    // 0 or 1
-      // do nothing for now
-    }
-    else if (schema_param.type && schema_param.type === 'integer') {
-      // do nothing for now
-    }
-    else if (schema_param.type && schema_param.type === 'string') {
-      // do nothing for now
-    }
-    else if (schema_param.type && schema_param.type === 'number') {
-      // do nothing for now
+      readAnyOf(schema_param);
     }
     else if (schema_param.properties && !schema_param.type) {
       // assume as object -- (nonblock-statement-body-position uses this)
@@ -60,55 +63,104 @@ module.exports = function schemaReader(schema) {
 
   // ------------- base types ----------
   function readEnum(param) {
-    if (Array.isArray(param)) {  // enum: one from the list
-      return { oneOf: param};
+    // console.log("ping1", param);
+    checkForUnknownParameters(param, ['enum']);
+    // console.log("ping2");
+    if (!Array.isArray(param.enum)) {  // enum: one from the list
+      throw 'Not an array enum';
     }
+    // console.log("ping3");
+    var z ={ oneOf: param.enum};
+    // console.log("ping4");
+    return z;
   }
 
   function readBoolean(param) {
+    checkForUnknownParameters(param, ['type']);
     return param;
   }
 
-  function readObject(param) {
-    if (param.properties != null) {
-      for (let prop in param.properties) {
-        //console.log(prop + '   ' + JSON.stringify(param.properties[prop], null, 3));
-        readParameter(param.properties[prop]);
-      }
-    }
-
-    if (param.additionalProperties !== false)
-      throw 'Strange object';
-
-    //         if (schema.properties != null) {
-    //           for (let prop in schema.properties) {
-    //             if (!rule.set) rule.set = {};
-    //             if (!rule.set.params) rule.set.params = [];
-    //             rule.set.params.push({'name':prop, 'type':schema.properties[prop].type});
-    //           }
-    //           if (schema.additionalProperties === true)
-    //             console.log("--- omg WTF ---");
-    //         }
-    //         else {
-    //           console.log(`[${rule.name}] Unknown schema.type format`);
-    //         }
+  function readInteger(param) {
+    checkForUnknownParameters(param, ['type', 'minimum', 'maximum']);
+    return param;
   }
 
-  function readArray(param) {
+  function readNumber(param) {
+    checkForUnknownParameters(param, ['type']);
+    return param;
+  }
+
+  function readString(param) {
+    checkForUnknownParameters(param, ['type', 'not']);
+    return param;
+  }
+
+
+  function readObject(param) {
+    if (param.properties == null && param.additionalProperties == null) {
+      throw 'Object without properties';
+    }
+
+    checkForUnknownParameters(param, ['type', 'properties',
+      'additionalProperties', 'required', 'patternProperties']);
+
+    // additionalProperties are not defined completely in the schema,
+    //  must refer to the docs for the full syntax
+    //
+    // if (param.additionalProperties != null && param.additionalProperties !== false)
+    //   throw 'Object with additionalProperties';
+
+    // if additionalProperties exists but is false it isn't doing anything
+    if (param.additionalProperties === false) {
+      delete param.additionalProperties;
+    }
+
+    for (let prop in param.properties) {
+      //console.log(prop + '   ' + JSON.stringify(param.properties[prop], null, 3));
+      param.properties[prop] = readParameter(param.properties[prop]);
+    }
+
+    return param;
+  }
+
+
+  function readArray(param) {   // order matters in arrays
     if (param.items == null) {
       throw 'Array without items';
     }
 
-    // for (let prop in param.properties) {
-    //   //console.log(prop + '   ' + JSON.stringify(param.properties[prop], null, 3));
-    //   readParameter(param.properties[prop]);
-    // }
+    checkForUnknownParameters(param, ['type', 'items',
+      'minItems', 'maxItems', 'uniqueItems']);
 
-    // check for unknown parameters
-    for (var key in param) {
-      if (key !== 'minItems' && key !== 'maxItems') {
-        throw 'Unknown parameter in array';
-      }
+    // items is an object
+    param.items = readParameter(param.items);
+
+    return param;
+  }
+
+
+  function readOneOf(param) {
+    checkForUnknownParameters(param, ['oneOf']);
+    if (!Array.isArray(param.oneOf)) {
+      throw 'Not an array oneOf';
+    }
+    return param;
+  }
+
+  function readAnyOf(param) {
+    checkForUnknownParameters(param, ['anyOf']);
+    if (!Array.isArray(param.anyOf)) {
+      throw 'Not an array anyOf';
+    }
+    return param;
+  }
+
+  // --------------------
+  function checkForUnknownParameters(obj, known_keys) {
+    for (var key in obj) {
+      if (known_keys.indexOf(key) === -1)
+        throw 'Unknown parameter:  ' + JSON.stringify(obj, null, 3);
+    }
   }
 
 };
