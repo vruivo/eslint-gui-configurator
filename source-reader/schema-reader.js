@@ -1,60 +1,66 @@
 'use strict';
 
 module.exports = function schemaReader(schema) {
-  if (Array.isArray(schema) && schema.length) {
+  if (!Array.isArray(schema)) {
+    schema = [schema];
+  }
 
     // if (schema.length > 1) {
     //   throw 'Schema length > 1 (ignoring for now...)';
     // }
 
-    schema.forEach(function parse_schema(schema_param) {
-      readParameter(schema_param);
-    });
+  return schema.map(function parse_schema(schema_param) {
+    return readParameter(schema_param);
+  });
 
 // XXX: test-set-> accessor-pairs, arrow-parens, brace-style, one-var
 
-  }
-  else {
-    throw 'Unknown schema format';
-  }
+  // }
+  // else {
+  //   throw 'Unknown schema format';
+  // }
 
 
   // -----------------------------
   function readParameter(schema_param) {
     if (schema_param == null)
-      throw 'schema param is undefined'
+      throw 'schema param is undefined';
 
     if (schema_param.enum) {
-      readEnum(schema_param);
+      return readEnum(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'boolean') {
-      readBoolean(schema_param);
+      return readBoolean(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'integer') {
-      readInteger(schema_param);
+      return readInteger(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'number') {
-      readNumber(schema_param);
+      return readNumber(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'string') {
-      readString(schema_param);
+      return readString(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'object') {
-      readObject(schema_param);
+      return readObject(schema_param);
     }
     else if (schema_param.type && schema_param.type === 'array') {
-      readArray(schema_param);
+      return readArray(schema_param);
     }
     else if (schema_param.oneOf) {    // choose 1
-      readOneOf(schema_param);
+      return readOneOf(schema_param);
     }
     else if (schema_param.anyOf) {    // 0 or 1
-      readAnyOf(schema_param);
+      return readAnyOf(schema_param);
     }
     else if (schema_param.properties && !schema_param.type) {
       // assume as object -- (nonblock-statement-body-position uses this)
       schema_param.type = 'object';
-      readObject(schema_param);
+      return readObject(schema_param);
+    }
+    else if (schema_param['$ref']) {
+      // 'special' param (comma-dangle and padding-line-between-statements use this)
+      return schema_param;
     }
     else {  // default
       throw 'Unknown schema param  ' + JSON.stringify(schema_param, null, 3);
@@ -91,7 +97,7 @@ module.exports = function schemaReader(schema) {
   }
 
   function readString(param) {
-    checkForUnknownParameters(param, ['type', 'not']);
+    checkForUnknownParameters(param, ['type', 'not', 'minLength']);
     return param;
   }
 
@@ -106,9 +112,6 @@ module.exports = function schemaReader(schema) {
 
     // additionalProperties are not defined completely in the schema,
     //  must refer to the docs for the full syntax
-    //
-    // if (param.additionalProperties != null && param.additionalProperties !== false)
-    //   throw 'Object with additionalProperties';
 
     // if additionalProperties exists but is false it isn't doing anything
     if (param.additionalProperties === false) {
@@ -117,7 +120,20 @@ module.exports = function schemaReader(schema) {
 
     for (let prop in param.properties) {
       //console.log(prop + '   ' + JSON.stringify(param.properties[prop], null, 3));
-      param.properties[prop] = readParameter(param.properties[prop]);
+      if (prop === 'anyOf' || prop === 'oneOf') {   // happens once, in operator-linebreak
+        try {
+          param.properties[prop] = readParameter(param.properties);
+        } catch (e) {
+          if (!param.additionalProperties) {
+            delete param.properties;
+            param.additionalProperties = { 'type':'string' };
+          }
+          else
+            throw 'Invalid param';
+        }
+      }
+      else
+        param.properties[prop] = readParameter(param.properties[prop]);
     }
 
     return param;
@@ -129,8 +145,20 @@ module.exports = function schemaReader(schema) {
       throw 'Array without items';
     }
 
+    if (Array.isArray(param.items)) {
+      if (param.items.length === 1) {
+        param.items = param.items[0];
+      }
+      else
+        throw 'Array.items is an array with size ' + param.items.length;
+    }
+
     checkForUnknownParameters(param, ['type', 'items',
-      'minItems', 'maxItems', 'uniqueItems']);
+      'minItems', 'maxItems', 'uniqueItems', 'definitions', 'additionalItems']);
+
+    // definitions is a 'special' param (comma-dangle and
+    //     padding-line-between-statements use this)
+    // additionalItems is used by padding-line-between-statements
 
     // items is an object
     param.items = readParameter(param.items);
@@ -159,7 +187,7 @@ module.exports = function schemaReader(schema) {
   function checkForUnknownParameters(obj, known_keys) {
     for (var key in obj) {
       if (known_keys.indexOf(key) === -1)
-        throw 'Unknown parameter:  ' + JSON.stringify(obj, null, 3);
+        throw 'Unknown parameter:  ' + key + ' :: ' + JSON.stringify(obj, null, 3);
     }
   }
 

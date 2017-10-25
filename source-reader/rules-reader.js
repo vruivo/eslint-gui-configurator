@@ -10,14 +10,13 @@ module.exports = function() {
   const rules_dir = __dirname + '/git-clone/eslint/lib/rules/'; // TODO: safe termination '/'
 
   const files = fs.readdirSync(rules_dir);
-  var rule, eslint_rule, docs_len;
+  var rule, eslint_rule, file_count = 0, files_parsed_count = 0;
   //var rules = [];
 
-  // var cc = 0;
   files.forEach(function list_files(file) {
     if (file.search('.js$') !== -1) {
       //console.log(cc + ' - ' + file);
-      // cc++;
+      file_count++;
 
       eslint_rule = require(rules_dir + file).meta;
       // console.log(eslint_rule);
@@ -52,43 +51,17 @@ module.exports = function() {
 
       // schema section
       if (eslint_rule.schema != null) {
-        if (Array.isArray(eslint_rule.schema) && eslint_rule.schema.length) {
-
-          try {
-            schemaReader(eslint_rule.schema);
-          } catch (e) {
-            console.log(rule.name + '  --  ' + e);
-          }
-
-//           eslint_rule.schema.forEach(function parse_schema(schema) {
-//
-//             if (schema.enum && Array.isArray(schema.enum)) {  // enum: one from the list
-//               if (!rule.set) rule.set = {};
-//               rule.set._one_of = schema.enum;
-//             }
-//             else if (schema.type) {
-//               if (schema.type === 'object' && schema.properties != null) {
-//                 for (let prop in schema.properties) {
-//                   if (!rule.set) rule.set = {};
-//                   if (!rule.set.params) rule.set.params = [];
-//                   rule.set.params.push({'name':prop, 'type':schema.properties[prop].type});
-//                 }
-//                 if (schema.additionalProperties === true)
-//                   console.log("--- omg WTF ---");
-//               }
-//               else {
-//                 console.log(`[${rule.name}] Unknown schema.type format`);
-//               }
-// //XXX: test-set-> accessor-pairs, arrow-parens, brace-style, one-var
-//             }
-//             else {  // default
-//               //console.log(`[${rule.name}] Unknown schema rule format`);
-//             }
-//           });
+// if (rule.name === 'arrow-parens') throw 'bla';
+        try {
+          rule.schema = schemaReader(eslint_rule.schema);
+          // console.log(xyz);
+          // rule.schema = xyz;
+        } catch (e) {
+          console.log(rule.name + '  --  ' + e);
+          // console.log(JSON.stringify(eslint_rule.schema, null, 3));
+          return; // skip
         }
-        else {
-          //console.log(`[${rule.name}] Unknown schema format`);
-        }
+
       }
       else {
         console.log(`Rule ${rule.name} missing schema section`);
@@ -104,7 +77,6 @@ module.exports = function() {
       }
 
       // check for unknown parameters
-      // docs_len = Object.keys(eslint_rule.docs).length;
       for (var key in eslint_rule) {
         if (key !== 'docs' && key !== 'schema' && key !== 'fixable'
                 && key !== 'deprecated') {
@@ -112,12 +84,22 @@ module.exports = function() {
         }
       }
 
+      if (rule.schema == undefined) {
+        throw 'Schema not found: ' + rule.name;
+      }
 
-      rule = eslint_rule = docs_len = null;
+      // console.log(JSON.stringify(rule, null, 3));
+      // console.log('----');
+
+      files_parsed_count++;
+      rule = eslint_rule = null;
 
 //process.exit();
     } // end of if(.js)
   }); // end of for
+
+  console.log('Rules found:  ' + file_count);
+  console.log('Rules parsed: ' + files_parsed_count);
 
   return {};
 };
