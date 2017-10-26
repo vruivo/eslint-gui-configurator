@@ -5,20 +5,11 @@ module.exports = function schemaReader(schema) {
     schema = [schema];
   }
 
-    // if (schema.length > 1) {
-    //   throw 'Schema length > 1 (ignoring for now...)';
-    // }
-
   return schema.map(function parse_schema(schema_param) {
     return readParameter(schema_param);
   });
 
 // XXX: test-set-> accessor-pairs, arrow-parens, brace-style, one-var
-
-  // }
-  // else {
-  //   throw 'Unknown schema format';
-  // }
 
 
   // -----------------------------
@@ -62,6 +53,20 @@ module.exports = function schemaReader(schema) {
       // 'special' param (comma-dangle and padding-line-between-statements use this)
       return schema_param;
     }
+    else if (schema_param.type && Array.isArray(schema_param.type)
+        && schema_param.type.length === 2
+        && schema_param.type.indexOf('null') !== -1) {
+      // another 'special' param (array-bracket-newline and array-element-newline use this)
+      let index = schema_param.type[0] !== 'null' ? 0 : 1;
+      schema_param.type = schema_param.type[index];
+      schema_param = {
+        'oneOf': [
+          schema_param,
+          { 'enum': ['null'] }
+        ]
+      };
+      return readParameter(schema_param);
+    }
     else {  // default
       throw 'Unknown schema param  ' + JSON.stringify(schema_param, null, 3);
     }
@@ -69,16 +74,11 @@ module.exports = function schemaReader(schema) {
 
   // ------------- base types ----------
   function readEnum(param) {
-    // console.log("ping1", param);
     checkForUnknownParameters(param, ['enum']);
-    // console.log("ping2");
     if (!Array.isArray(param.enum)) {  // enum: one from the list
       throw 'Not an array enum';
     }
-    // console.log("ping3");
-    var z ={ oneOf: param.enum};
-    // console.log("ping4");
-    return z;
+    return param;
   }
 
   function readBoolean(param) {
@@ -108,7 +108,7 @@ module.exports = function schemaReader(schema) {
     }
 
     checkForUnknownParameters(param, ['type', 'properties',
-      'additionalProperties', 'required', 'patternProperties']);
+      'additionalProperties', 'required', 'patternProperties', 'minProperties']);
 
     // additionalProperties are not defined completely in the schema,
     //  must refer to the docs for the full syntax
@@ -119,7 +119,6 @@ module.exports = function schemaReader(schema) {
     }
 
     for (let prop in param.properties) {
-      //console.log(prop + '   ' + JSON.stringify(param.properties[prop], null, 3));
       if (prop === 'anyOf' || prop === 'oneOf') {   // happens once, in operator-linebreak
         try {
           param.properties[prop] = readParameter(param.properties);
@@ -129,7 +128,7 @@ module.exports = function schemaReader(schema) {
             param.additionalProperties = { 'type':'string' };
           }
           else
-            throw 'Invalid param';
+            throw 'Invalid object param';
         }
       }
       else
@@ -145,12 +144,8 @@ module.exports = function schemaReader(schema) {
       throw 'Array without items';
     }
 
-    if (Array.isArray(param.items)) {
-      if (param.items.length === 1) {
-        param.items = param.items[0];
-      }
-      else
-        throw 'Array.items is an array with size ' + param.items.length;
+    if (!Array.isArray(param.items)) {
+      param.items = [ param.items ];
     }
 
     checkForUnknownParameters(param, ['type', 'items',
@@ -160,8 +155,9 @@ module.exports = function schemaReader(schema) {
     //     padding-line-between-statements use this)
     // additionalItems is used by padding-line-between-statements
 
-    // items is an object
-    param.items = readParameter(param.items);
+    param.items = param.items.map(function mapArray(item) {
+      return readParameter(item);
+    });
 
     return param;
   }
@@ -172,6 +168,10 @@ module.exports = function schemaReader(schema) {
     if (!Array.isArray(param.oneOf)) {
       throw 'Not an array oneOf';
     }
+
+    param.oneOf = param.oneOf.map(function mapOneOf(item) {
+      return readParameter(item);
+    });
     return param;
   }
 
@@ -180,6 +180,10 @@ module.exports = function schemaReader(schema) {
     if (!Array.isArray(param.anyOf)) {
       throw 'Not an array anyOf';
     }
+
+    param.anyOf = param.anyOf.map(function mapAnyOf(item) {
+      return readParameter(item);
+    });
     return param;
   }
 
