@@ -14,11 +14,20 @@ const html_beginning =
 const html_end = '</body></html>';
 
 var html = html_beginning;
+html += '<table><tbody>';
 
 rules.forEach(function createHTML(rule) {
-  html += '<a href="'+rule.url +'">'+ rule.name + ' -- '+ rule.description+ '</a><br>';
+  html += '<tr> '+
+      '<td>' +
+        '<a href="'+rule.url +'">'+ rule.name + '</a>'+
+      '</td>' +
+      '<td>' +
+        '&nbsp&nbsp&nbsp'+ rule.description+ '<br>' +
+      '</td>' +
+      '</tr>';
 });
 
+html+='</tbody></table>';
 html += html_end;
 
 const fs = require('fs');
