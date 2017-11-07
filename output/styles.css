@@ -1,0 +1,13 @@
+table, th, td {
+  border: 1px solid #dddddd;
+  border-collapse: collapse;
+}
+td {
+  padding:  5px;
+}
+.hidden {
+  display: none;
+}
+.hidden:target {
+  display: table-cell;
+}
