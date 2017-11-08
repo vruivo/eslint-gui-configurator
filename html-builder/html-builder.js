@@ -123,4 +123,31 @@ module.exports = function htmlBuilder(rules, output_file) {
     };
   }
 
+  var tt = loadTemplate(__dirname + '/rule_line.htt');
+  console.log(tt({
+    url: 'https://abc.com',
+    name: 'myName',
+    description: 'bla bla bla'
+  }));
+
+  function loadTemplate(file) {
+    var data = fs.readFileSync(file, 'utf8');
+
+    var variables = data.match(/\${(\w+)}/g);
+    variables = Array.from(new Set(variables)); // uniques
+    variables = variables.map(function removeTagChars(item) {
+      return item.substring(2, item.length-1);
+    });
+
+    return function createFromTemplate(values) {
+      //TODO: check for variables completion <<<<<<<<<<<<<<<<<<<
+      let v, tag, data_out=data;
+      for (v in values) {
+        tag = '\\${' + v + '}';
+        data_out = data_out.replace(new RegExp(tag,'g'), values[v]);
+      }
+      return data_out;
+    };
+  }
+
 };
