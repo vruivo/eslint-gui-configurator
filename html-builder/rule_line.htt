@@ -1,0 +1,21 @@
+<tr>
+  <td>
+    <a href="${url}">${name}</a>
+  </td>
+  <td>
+    ${description}
+  </td>
+  <td>
+    <select onchange="toggleConfigVisibility(this)">
+      <option value="off">off</option>
+      <option value="warn">warn</option>
+      <option value="error">error</option>
+    <select>
+  </td>
+</tr>
+
+<tr class="hidden">
+  <td colspan="3">
+    hidden stuffs <br> abc <br> 123'
+  </td>
+</tr>
