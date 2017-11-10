@@ -83,8 +83,9 @@ module.exports = function getRules() {
         throw 'Schema not found: ' + rule.name;
       }
 
-      // console.log(JSON.stringify(rule, null, 3));
-      // console.log('----');
+      // console.log('-- '+ rule.name +' --');
+      // console.log(JSON.stringify(rule.schema, null, 3));
+      // console.log('------------');
 
       rules.push(rule);
 

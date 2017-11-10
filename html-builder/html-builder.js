@@ -1,32 +1,22 @@
 'use strict';
 
 const fs = require('fs');
-const readline = require('readline');
 const html_utils = require(__dirname + '/node-html-utils');
+const generateRuleControls = require(__dirname + '/html-rule-control-generator');
 
 module.exports = function htmlBuilder(rules, output_file) {
 
-  const rl = readline.createInterface({
-    input: fs.createReadStream(__dirname + '/html_base.html')
+  const createHtmlPage = html_utils.loadTemplate(__dirname + '/html_base.htt');
+  const html = createHtmlPage({
+    body: createRulesHtml(rules)
   });
+  fs.writeFileSync(output_file, html);
 
-  var html = '';
-  rl.on('line', (line) => {
-    // console.log(`Line from file: ${line}`);
-    html += line + '\n';
 
-    if (line.indexOf('<body>') !== -1) {
-      html += createRulesHtml(rules);
-    }
-  });
-
-  rl.on('close', () => {
-    fs.writeFileSync(output_file, html);
-  });
 
   function createRulesHtml(rules) {
 
-    var html = '<form autocomplete="off"><table>\n<tbody>\n';
+    var html = '<form autocomplete="off"><table style="margin: 0">\n<tbody>\n';
 
     const createRuleLine = html_utils.loadTemplate(__dirname + '/rule_line.htt');
 
@@ -34,7 +24,8 @@ module.exports = function htmlBuilder(rules, output_file) {
       html += createRuleLine({
         url: rule.url,
         name: rule.name,
-        description: rule.description
+        description: rule.description,
+        controls: generateRuleControls(rule.schema)
       });
     });
 
