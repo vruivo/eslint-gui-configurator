@@ -1,11 +1,11 @@
 <tr>
-  <td>
+  <td class="rule-line">
     <a href="${url}">${name}</a>
   </td>
-  <td>
+  <td class="rule-line">
     ${description}
   </td>
-  <td>
+  <td class="rule-line">
     <select onchange="toggleConfigVisibility(this)">
       <option value="off">off</option>
       <option value="warn">warn</option>
@@ -14,8 +14,8 @@
   </td>
 </tr>
 
-<tr class="hidden1">
-  <td colspan="3" style="padding-left: 30px;">
+<tr class="hidden">
+  <td colspan="3" class="rule-controls-line">
     ${controls}
   </td>
 </tr>

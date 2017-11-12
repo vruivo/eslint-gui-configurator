@@ -27,12 +27,12 @@ module.exports = function generateRuleControls(schema) {
     else if (spec.type && spec.type === 'integer') {
       return readInteger(spec);
     }
-    // else if (spec.type && spec.type === 'number') {
-    //   return readNumber(spec);
-    // }
-    // else if (spec.type && spec.type === 'string') {
-    //   return readString(spec);
-    // }
+    else if (spec.type && spec.type === 'number') {
+      return readInteger(spec);
+    }
+    else if (spec.type && spec.type === 'string') {
+      return readString(spec);
+    }
     else if (spec.type && spec.type === 'object') {
       return readObject(spec);
     }
@@ -42,9 +42,9 @@ module.exports = function generateRuleControls(schema) {
     else if (spec.oneOf) {    // choose 1
       return readOneOf(spec);
     }
-    // else if (spec.anyOf) {    // 0 or 1
-    //   return readAnyOf(spec);
-    // }
+    else if (spec.anyOf) {    // 0 or 1
+      return readAnyOf(spec);
+    }
   }
 
   //---------------------------------------------------------------
@@ -53,7 +53,7 @@ module.exports = function generateRuleControls(schema) {
     var html = '';
     if (param.enum.length > 1) {
       param.enum.forEach(function functionName(item) {
-        html += '<input type="radio" name="enum'+ cc +'" value="true"> ' + item;
+        html += '<input type="radio" name="enum'+ cc +'" value="'+item+'"> ' + item;
       });
     }
     else {
@@ -75,6 +75,15 @@ module.exports = function generateRuleControls(schema) {
     var html = '<input type="number"';
     if (spec.minimum != null)
       html += ' min="'+ spec.minimum +'"';
+    if (spec.maximum != null)
+      html += ' max="'+ spec.maximum +'"';
+    html += '>';
+    return html;
+  }
+
+  function readString(spec) {
+    //'not', 'minLength']);
+    var html = '<input type="text"';
     html += '>';
     return html;
   }
@@ -96,6 +105,7 @@ module.exports = function generateRuleControls(schema) {
     //   delete param.additionalProperties;
     // }
     var html = '';
+    html += '<table><tbody>';
     for (let prop in param.properties) {
       // if (prop === 'anyOf' || prop === 'oneOf') {   // happens once, in operator-linebreak
       //   try {
@@ -110,11 +120,13 @@ module.exports = function generateRuleControls(schema) {
       //   }
       // }
       // else
-      html += prop+ ': ';
-      html += readParameter(param.properties[prop]);
-      html += '<br>';
+      html += '<tr>';
+      html += '<td><span>' + prop + ': </span></td>';
+      html += '<td>'+ readParameter(param.properties[prop]) +'</td>';
+      html+= '</tr>';
+      // html += '<br>';
     }
-
+    html += '</tbody></table>';
     return html;
   }
 
@@ -123,12 +135,39 @@ module.exports = function generateRuleControls(schema) {
     var html = '';
     var counter = cc;
 
+    // html += '<div class="oneof-div">';
+    // param.oneOf.forEach(function functionName(item) {
+    //   html += '<input type="radio" name="oneof'+ counter +'" value="true"> '+
+    //           '<div class="oneof-div2">'+ readParameter(item) +'</div><br>';
+    // });
+    // html += '</div>';
+
+    html += '<table><tbody>';
     param.oneOf.forEach(function functionName(item) {
-      html += '<div>';
-      html += '<input type="radio" name="oneof'+ counter +'" value="true"> '+
-              '<div style="border:1px solid;display:inline-block;">'+ readParameter(item) +'</div>';
-      html += '</div>';
+      html += '<tr>';
+      html += '<td><input type="radio" name="oneof'+ counter +'" > </td>'+
+              '<td>'+ readParameter(item) +'</td>';
+      html += '</tr>';
     });
+    html += '</tbody></table>';
+
+    cc++;
+    return html;
+  }
+
+  function readAnyOf(param) {
+    var html = '';
+    var counter = cc;
+
+    html += '<table><tbody>';
+    param.anyOf.forEach(function functionName(item) {
+      html += '<tr>';
+      html += '<td><input type="checkbox" name="anyof'+ counter +'" onchange="checkOnlyOne(this)"> </td>'+
+              '<td>'+ readParameter(item) +'</td>';
+      html += '</tr>';
+
+    });
+    html += '</tbody></table>';
 
     cc++;
     return html;

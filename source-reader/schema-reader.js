@@ -9,8 +9,6 @@ module.exports = function schemaReader(schema) {
     return readParameter(schema_param);
   });
 
-// XXX: test-set-> accessor-pairs, arrow-parens, brace-style, one-var
-
 
   // -----------------------------
   function readParameter(schema_param) {

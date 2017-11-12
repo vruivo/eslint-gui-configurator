@@ -1,9 +1,9 @@
 'use strict';
 
-function toggleConfigVisibility(abc) { // eslint-disable-line no-unused-vars
-  var value = abc.value;
+function toggleConfigVisibility(select) { // eslint-disable-line no-unused-vars
+  var value = select.value;
 
-  var tr = closest(abc, 'tr', 'tbody');
+  var tr = closest(select, 'tr', 'tbody');
   var hidden_tr = tr.nextElementSibling;
 
   if (value != 'off') {
@@ -27,4 +27,23 @@ function closest(el, selector, stopSelector) {
     el = el.parentElement;
   }
   return retval;
+}
+
+function checkOnlyOne(checkbox) { // eslint-disable-line no-unused-vars
+  var list = document.getElementsByName(checkbox.name);
+  var checked_checkbox;
+  list.forEach(function functionName(check) {
+    if (check.checked === true)
+      checked_checkbox = check;
+    check.checked = false;
+  });
+  if (checked_checkbox !== this)
+    checkbox.checked = true;
+  // checked_checkbox = document.querySelector('input[type=checkbox][name="'+checkbox.name+'"][checked=true]');
+  // if (checked_checkbox !== checkbox) {
+  // checked_checkbox.checked = false;
+  // checkbox.checked = true;
+  // }
+  // else
+  // checkbox.checked = false;
 }

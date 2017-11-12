@@ -1,3 +1,7 @@
+/*#4b32c3 eslint dark purple*/
+/*#d4d4f7 eslint purple*/
+/*#F9F9F9 eslint light purple*/
+
 table, th, td {
   border: 1px solid #dddddd;
   border-collapse: collapse;
@@ -6,8 +10,10 @@ td {
   padding:  5px;
 }
 tr:hover {
-  /*background-color: rgba(255,0,255,0.15);*/
-  background-color: #d4d4f7;
+  background-color: #F9F9F9;
+}
+.rule-line {
+  border-top: 2px solid blueviolet;
 }
 a:link, a:visited {
     color: blue;
@@ -15,7 +21,7 @@ a:link, a:visited {
 input[type=number] {
   max-width: 55px;
 }
-.hidden {
+.hidden1 {
   display: none;
 }
 /*.hidden:target {
@@ -26,3 +32,15 @@ input[type=number] {
   border-style: dashed;
   border-color: #4b32c3;
 }
+.rule-controls-line {
+  padding-left: 50px;
+}
+/*---------------------------------------*/
+/*.oneof-div {
+  display: inline-block;
+}
+.oneof-div2 {
+  border:1px solid;
+  display:inline-block;
+  vertical-align: top;
+}*/
