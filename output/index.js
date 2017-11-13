@@ -30,20 +30,10 @@ function closest(el, selector, stopSelector) {
 }
 
 function checkOnlyOne(checkbox) { // eslint-disable-line no-unused-vars
+  // this gets called AFTER the checkbox changes value
   var list = document.getElementsByName(checkbox.name);
-  var checked_checkbox;
   list.forEach(function functionName(check) {
-    if (check.checked === true)
-      checked_checkbox = check;
-    check.checked = false;
+    if (check.checked === true && check !== checkbox)
+      check.checked = false;
   });
-  if (checked_checkbox !== this)
-    checkbox.checked = true;
-  // checked_checkbox = document.querySelector('input[type=checkbox][name="'+checkbox.name+'"][checked=true]');
-  // if (checked_checkbox !== checkbox) {
-  // checked_checkbox.checked = false;
-  // checkbox.checked = true;
-  // }
-  // else
-  // checkbox.checked = false;
 }

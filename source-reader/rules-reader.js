@@ -49,7 +49,7 @@ module.exports = function getRules() {
 
       // schema section
       if (eslint_rule.schema != null) {
-// if (rule.name !== 'no-restricted-modules') return;
+        // if (rule.name !== 'padding-line-between-statements') return;
         try {
           rule.schema = schemaReader(eslint_rule.schema);
         } catch (e) {

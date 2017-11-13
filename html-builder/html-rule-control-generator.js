@@ -36,9 +36,12 @@ module.exports = function generateRuleControls(schema) {
     else if (spec.type && spec.type === 'object') {
       return readObject(spec);
     }
-    // else if (spec.type && spec.type === 'array') {
-    //   return readArray(spec);
-    // }
+    else if (spec.type && spec.type === 'array') {
+      return readArray(spec);
+    }
+    else if (spec.type && spec.type === 'arrayOf') {
+      return readArrayOf(spec);
+    }
     else if (spec.oneOf) {    // choose 1
       return readOneOf(spec);
     }
@@ -130,10 +133,40 @@ module.exports = function generateRuleControls(schema) {
     return html;
   }
 
+  function readArray(param) {
+    var html = '';
+    html += '<table><tbody>';
+    for (let prop in param.items) {
+      html += '<tr>';
+      // html += '<td><span>' + prop + ': </span></td>';
+      html += '<td>'+ readParameter(param.items[prop]) +'</td>';
+      // html += '<td>X</td>';
+      html+= '</tr>';
+    }
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function readArrayOf(param) {
+    var html = '<table><tbody>';
+    var counter = cc++;
+
+    for (let prop in param.items) {
+      // html += '<tr>';
+      // html += '<td><input type="checkbox" name="arrayof'+ counter +'" > </td>'+
+      //         '<td>'+ param.items[prop] +'</td>';
+      // html+= '</tr>';
+      html += '<input type="checkbox" name="arrayof'+ counter +'" > '+
+              param.items[prop];
+    }
+    html += '</tbody></table>';
+    return html;
+  }
+
 
   function readOneOf(param) {
     var html = '';
-    var counter = cc;
+    var counter = cc++;
 
     // html += '<div class="oneof-div">';
     // param.oneOf.forEach(function functionName(item) {
@@ -151,13 +184,12 @@ module.exports = function generateRuleControls(schema) {
     });
     html += '</tbody></table>';
 
-    cc++;
     return html;
   }
 
   function readAnyOf(param) {
     var html = '';
-    var counter = cc;
+    var counter = cc++;
 
     html += '<table><tbody>';
     param.anyOf.forEach(function functionName(item) {
@@ -169,7 +201,6 @@ module.exports = function generateRuleControls(schema) {
     });
     html += '</tbody></table>';
 
-    cc++;
     return html;
   }
 };

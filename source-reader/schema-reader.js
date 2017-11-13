@@ -5,10 +5,13 @@ module.exports = function schemaReader(schema) {
     schema = [schema];
   }
 
-  return schema.map(function parse_schema(schema_param) {
+  var newschema = schema.map(function parse_schema(schema_param) {
     return readParameter(schema_param);
   });
 
+  if (schema[0] && schema[0].definitions)
+    delete schema[0].definitions;
+  return newschema;
 
   // -----------------------------
   function readParameter(schema_param) {
@@ -36,6 +39,9 @@ module.exports = function schemaReader(schema) {
     else if (schema_param.type && schema_param.type === 'array') {
       return readArray(schema_param);
     }
+    else if (schema_param.type && schema_param.type === 'arrayOf') {  // custom
+      return schema_param;
+    }
     else if (schema_param.oneOf) {    // choose 1
       return readOneOf(schema_param);
     }
@@ -49,7 +55,8 @@ module.exports = function schemaReader(schema) {
     }
     else if (schema_param['$ref']) {
       // 'special' param (comma-dangle and padding-line-between-statements use this)
-      return schema_param;
+      var def = schema_param['$ref'].substring(schema_param['$ref'].length, schema_param['$ref'].lastIndexOf('/')+1);
+      return readParameter(schema[0].definitions[def]);
     }
     else if (schema_param.type && Array.isArray(schema_param.type)
         && schema_param.type.length === 2
@@ -148,14 +155,27 @@ module.exports = function schemaReader(schema) {
 
     checkForUnknownParameters(param, ['type', 'items',
       'minItems', 'maxItems', 'uniqueItems', 'definitions', 'additionalItems']);
-
     // definitions is a 'special' param (comma-dangle and
     //     padding-line-between-statements use this)
     // additionalItems is used by padding-line-between-statements
 
-    param.items = param.items.map(function mapArray(item) {
-      return readParameter(item);
-    });
+    // differentiate between the various array 'types'
+    if (param.items.length === 1 && param.items[0].enum) {
+      if (param.minItems && param.maxItems && param.minItems === param.maxItems && param.minItems > 1) {
+        // sorted array
+      }
+      else if (param.maxItems == null || param.maxItems > 1) {
+        // multiple value enum
+        readEnum(param.items[0]); // check if everything is ok
+        param.items = param.items[0].enum;
+        param.type = 'arrayOf';
+      }
+    }
+    else {
+      param.items = param.items.map(function mapArray(item) {
+        return readParameter(item);
+      });
+    }
 
     return param;
   }
