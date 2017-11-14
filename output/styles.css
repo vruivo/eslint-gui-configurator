@@ -9,12 +9,6 @@ table, th, td {
 td {
   padding:  5px;
 }
-tr:hover {
-  background-color: #F9F9F9;
-}
-.rule-line {
-  border-top: 2px solid blueviolet;
-}
 a:link, a:visited {
     color: blue;
 }
@@ -30,6 +24,15 @@ input[type=text] {
 /*.hidden:target {
   display: table-cell;
 }*/
+.rule-line {
+  border-top: 2px solid blueviolet;
+}
+tr.rule-line:hover {
+  background-color: #F9F9F9;
+}
+tr.rule-line td {
+  padding:  6px 12px;
+}
 .rule-text {
   background-color: rgba(0,0,0,0);
   border-style: dashed;
@@ -38,6 +41,12 @@ input[type=text] {
 }
 .rule-controls-line {
   padding-left: 50px;
+}
+.rule-category {
+  background-color: #4b32c3;
+  color: white;
+  font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: x-large;
 }
 /*---------------------------------------*/
 /*.oneof-div {

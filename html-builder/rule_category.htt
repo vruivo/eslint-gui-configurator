@@ -1,0 +1,3 @@
+<tr class="rule-category">
+  <td colspan="5">${category}</td>
+</tr>

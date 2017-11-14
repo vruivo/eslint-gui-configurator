@@ -1,11 +1,17 @@
-<tr>
-  <td class="rule-line">
+<tr class="rule-line">
+  <td title="recommended" style="width:1%">
+    ${recommended}
+  </td>
+  <td title="fixable" style="width:1%">
+    ${fixable}
+  </td>
+  <td>
     <a href="${url}">${name}</a>
   </td>
-  <td class="rule-line">
+  <td>
     ${description}
   </td>
-  <td class="rule-line">
+  <td>
     <select onchange="toggleConfigVisibility(this)">
       <option value="off">off</option>
       <option value="warn">warn</option>
@@ -15,7 +21,7 @@
 </tr>
 
 <tr class="hidden">
-  <td colspan="3" class="rule-controls-line">
+  <td colspan="5" class="rule-controls-line">
     ${controls}
   </td>
 </tr>
