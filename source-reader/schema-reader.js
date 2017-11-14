@@ -39,7 +39,13 @@ module.exports = function schemaReader(schema) {
     else if (schema_param.type && schema_param.type === 'array') {
       return readArray(schema_param);
     }
-    else if (schema_param.type && schema_param.type === 'arrayOf') {  // custom
+    else if (schema_param.type && schema_param.type === 'arrayEnum') {  // custom
+      return schema_param;
+    }
+    else if (schema_param.type && schema_param.type === 'arrayAnyOf') {  // custom
+      return schema_param;
+    }
+    else if (schema_param.type && schema_param.type === 'arrayOneOf') {  // custom
       return schema_param;
     }
     else if (schema_param.oneOf) {    // choose 1
@@ -162,16 +168,27 @@ module.exports = function schemaReader(schema) {
     // differentiate between the various array 'types'
     if (param.items.length === 1 && param.items[0].enum) {
       if (param.minItems && param.maxItems && param.minItems === param.maxItems && param.minItems > 1) {
-        // sorted array
+        // array+enum+(max=min) = sorted array
       }
-      else if (param.maxItems == null || param.maxItems > 1) {
-        // multiple value enum
+      else if (param.maxItems != null && param.maxItems > 1 || param.uniqueItems) {
+        // array+enum = multiple value enum
         readEnum(param.items[0]); // check if everything is ok
         param.items = param.items[0].enum;
-        param.type = 'arrayOf';
+        param.type = 'arrayEnum';
       }
     }
     else {
+      if (param.items.length === 1 && param.items[0].anyOf) {
+        // array+anyOf = anyOf arrays, multiple value of a set type
+        param.items = param.items[0].anyOf;
+        param.type = 'arrayAnyOf';
+      }
+      else if (param.items.length === 1 && param.items[0].oneOf) {
+        // array+oneOf = oneOf arrays, multiple value of a set type
+        param.items = param.items[0].oneOf;
+        param.type = 'arrayOneOf';
+      }
+
       param.items = param.items.map(function mapArray(item) {
         return readParameter(item);
       });

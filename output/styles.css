@@ -21,6 +21,9 @@ a:link, a:visited {
 input[type=number] {
   max-width: 55px;
 }
+input[type=text] {
+  max-width: 80px;
+}
 .hidden1 {
   display: none;
 }
@@ -31,6 +34,7 @@ input[type=number] {
   background-color: rgba(0,0,0,0);
   border-style: dashed;
   border-color: #4b32c3;
+  max-width: 200px;
 }
 .rule-controls-line {
   padding-left: 50px;

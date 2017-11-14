@@ -39,14 +39,23 @@ module.exports = function generateRuleControls(schema) {
     else if (spec.type && spec.type === 'array') {
       return readArray(spec);
     }
-    else if (spec.type && spec.type === 'arrayOf') {
-      return readArrayOf(spec);
+    else if (spec.type && spec.type === 'arrayEnum') {  // custom
+      return readArrayEnum(spec);
+    }
+    else if (spec.type && spec.type === 'arrayAnyOf') {  // custom
+      return readArrayAnyOf(spec);
+    }
+    else if (spec.type && spec.type === 'arrayOneOf') {  // custom
+      return readArrayOneOf(spec);
     }
     else if (spec.oneOf) {    // choose 1
       return readOneOf(spec);
     }
     else if (spec.anyOf) {    // 0 or 1
       return readAnyOf(spec);
+    }
+    else {
+      throw 'Unknown parameter ' + spec;
     }
   }
 
@@ -84,8 +93,7 @@ module.exports = function generateRuleControls(schema) {
     return html;
   }
 
-  function readString(spec) {
-    //'not', 'minLength']);
+  function readString() {
     var html = '<input type="text"';
     html += '>';
     return html;
@@ -108,28 +116,33 @@ module.exports = function generateRuleControls(schema) {
     //   delete param.additionalProperties;
     // }
     var html = '';
-    html += '<table><tbody>';
-    for (let prop in param.properties) {
-      // if (prop === 'anyOf' || prop === 'oneOf') {   // happens once, in operator-linebreak
-      //   try {
-      //     param.properties[prop] = readParameter(param.properties);
-      //   } catch (e) {
-      //     if (!param.additionalProperties) {
-      //       delete param.properties;
-      //       param.additionalProperties = { 'type':'string' };
-      //     }
-      //     else
-      //       throw 'Invalid object param';
-      //   }
-      // }
-      // else
-      html += '<tr>';
-      html += '<td><span>' + prop + ': </span></td>';
-      html += '<td>'+ readParameter(param.properties[prop]) +'</td>';
-      html+= '</tr>';
-      // html += '<br>';
+    if (param.additionalProperties && param.additionalProperties !== false) {
+      html += '<a href="abc">Not enough information on schema. Check rule documentation</a>';
     }
-    html += '</tbody></table>';
+    else {
+      html += '<table><tbody>';
+      for (let prop in param.properties) {
+        // if (prop === 'anyOf' || prop === 'oneOf') {   // happens once, in operator-linebreak
+        //   try {
+        //     param.properties[prop] = readParameter(param.properties);
+        //   } catch (e) {
+        //     if (!param.additionalProperties) {
+        //       delete param.properties;
+        //       param.additionalProperties = { 'type':'string' };
+        //     }
+        //     else
+        //       throw 'Invalid object param';
+        //   }
+        // }
+        // else
+        html += '<tr>';
+        html += '<td><span>' + prop + ': </span></td>';
+        html += '<td>'+ readParameter(param.properties[prop]) +'</td>';
+        html+= '</tr>';
+        // html += '<br>';
+      }
+      html += '</tbody></table>';
+    }
     return html;
   }
 
@@ -140,14 +153,15 @@ module.exports = function generateRuleControls(schema) {
       html += '<tr>';
       // html += '<td><span>' + prop + ': </span></td>';
       html += '<td>'+ readParameter(param.items[prop]) +'</td>';
-      // html += '<td>X</td>';
+      if (param.additionalItems != false && param.maxItems != param.items.length)
+        html += '<td>+</td>';
       html+= '</tr>';
     }
     html += '</tbody></table>';
     return html;
   }
 
-  function readArrayOf(param) {
+  function readArrayEnum(param) {
     var html = '<table><tbody>';
     var counter = cc++;
 
@@ -158,6 +172,36 @@ module.exports = function generateRuleControls(schema) {
       // html+= '</tr>';
       html += '<input type="checkbox" name="arrayof'+ counter +'" > '+
               param.items[prop];
+    }
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function readArrayAnyOf(param) {
+    var html = '<table><tbody>';
+    var counter = cc++;
+
+    for (let prop in param.items) {
+      html += '<tr>';
+      html += '<td><input type="checkbox" name="arrayanyof'+ counter +'" onchange="checkOnlyOne(this)"> </td>'+
+              '<td>'+ readParameter(param.items[prop]) +'</td>';
+      html += '<td>+</td>';
+      html+= '</tr>';
+    }
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function readArrayOneOf(param) {
+    var html = '<table><tbody>';
+    var counter = cc++;
+
+    for (let prop in param.items) {
+      html += '<tr>';
+      html += '<td><input type="radio" name="arrayoneof'+ counter +'" > </td>'+
+              '<td>'+ readParameter(param.items[prop]) +'</td>';
+      html += '<td>+</td>';
+      html+= '</tr>';
     }
     html += '</tbody></table>';
     return html;
