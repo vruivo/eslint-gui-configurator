@@ -3,11 +3,11 @@
 var cc=0;
 
 module.exports = function generateRuleControls(schema) {
-  var html = JSON.stringify(schema, null, 3) + '<br>';
+  var html = JSON.stringify(schema) + '<br>';
 
   html += '<input type="text" width="100%" class="rule-text">';
   schema.forEach(function schemaReader(spec) {
-    html += '<div style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
+    html += '<div class="controls" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
 
     html += readParameter(spec);
 
@@ -65,7 +65,7 @@ module.exports = function generateRuleControls(schema) {
     var html = '';
     if (param.enum.length > 1) {
       param.enum.forEach(function functionName(item) {
-        html += '<input type="radio" name="enum'+ cc +'" value="'+item+'"> ' + item;
+        html += '<input type="radio" name="enum'+ cc +'" value="'+item+'" onchange="interpretControls(this)"> ' + item;
       });
     }
     else {
@@ -77,8 +77,8 @@ module.exports = function generateRuleControls(schema) {
   }
 
   function readBoolean() {
-    var html = '<input type="radio" name="boolean'+ cc +'" value="true" checked> true' +
-               '<input type="radio" name="boolean'+ cc +'" value="false"> false';
+    var html = '<input type="radio" name="boolean'+ cc +'" value="true" checked onchange="interpretControls(this)"> true' +
+               '<input type="radio" name="boolean'+ cc +'" value="false" onchange="interpretControls(this)"> false';
     cc++;
     return html;
   }
