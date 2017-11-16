@@ -32,17 +32,17 @@ module.exports = function htmlBuilder(rules, output_file) {
     });
 
     // category = null;
-    Object.keys(rules_organized).sort().forEach(function loopItems(category) {
+    Object.keys(rules_organized).sort().forEach(function loopItems(category, cat_nr) {
       // html += '<tr style="background-color:blue"><td colspan="5">'+key+'</td></tr>';
       html += createRuleCategoryLine({category: category});
-      rules_organized[category].forEach(function createHTML(rule) {
+      rules_organized[category].forEach(function createHTML(rule, rule_nr) {
         html += createRuleLine({
           recommended: rule.recommended,
           fixable: rule.fixable,
           url: rule.url,
           name: rule.name,
           description: rule.description,
-          controls: generateRuleControls(rule.schema)
+          controls: generateRuleControls(rule.schema, cat_nr+rule_nr)
         });
       });
     });
