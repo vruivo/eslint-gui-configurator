@@ -3,11 +3,12 @@
 // var cc=0;
 
 module.exports = function generateRuleControls(schema, sch_nr) {
-  var html = JSON.stringify(schema) + '<br>';
-
+  var schema_str = JSON.stringify(schema);
+  var html = schema_str + '<br>';
+  schema_str = schema_str.replace(/"/g, '%22');  // url encode "
   html += '<input type="text" width="100%" class="rule-text">';
   schema.forEach(function schemaReader(spec) {
-    html += '<div class="controls" id="'+sch_nr+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
+    html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
 
     html += readParameter(spec, ''+sch_nr);
 

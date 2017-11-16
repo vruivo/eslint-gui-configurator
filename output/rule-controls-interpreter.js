@@ -1,49 +1,70 @@
 'use strict';
 
 function interpretControls(control) { // eslint-disable-line no-unused-vars
-  // var root = closest(control, 'div.controls', 'body');  // eslint-disable-line no-undef
-  var root = control.name;
-  root = root.substring(0, root.indexOf('_'));
-  var schema = JSON.parse('[ { "type": "object", "properties": { "getWithoutSet": { "type": "boolean" }, "setWithoutGet": { "type": "boolean" } } } ]');
-  // schema = JSON.parse(schema);
+  var div = closest(control, 'div.controls', 'body');  // eslint-disable-line no-undef
+  var schema = div.dataset.schema;
+  schema = schema.replace(/%22/g, '"');  // url decode "
+  schema = JSON.parse(schema);
 
-  // var str = '';
   var arr = [];
   schema.forEach(function functionName(param) {
-    arr.push(read(param, root));
+    arr.push(read(param, div.id));
   });
 
-  console.log('> ');
+  console.log('> ', JSON.stringify(arr));
   console.log(arr);
   return arr;
 
   //------------------------------
 
   function read(schema, name) {
-    // var str = '';
-    // var arr =[];
-    // schema.forEach(function functionName(param, i) {
+
     if (schema.type && schema.type === 'boolean') {
       return readBoolean(schema, name);
     }
     else if (schema.type && schema.type === 'object') {
       return readObject(schema, name);
     }
-    // });
-
-    // return str;
   }
 
   //------------------------------
 
-  function readBoolean(schema, name) {
-    var name1 = name+'_'+schema.type;
-    var x = document.getElementsByName(name1);
-    for (var i = 0; i < x.length; i++) {
-      if (x[i].checked)
-        return x[i].value;
+  function readEnum(schema, name) {
+    var name1 = name+'_enum';
+    var el = document.getElementsByName(name1);
+
+    for (var i = 0; i < el.length; i++) {
+      if (el[i].checked)
+        return el[i].value;
     }
   }
+
+  function readBoolean(schema, name) {
+    var name1 = name+'_'+schema.type;
+    var el = document.getElementsByName(name1);
+
+    for (var i = 0; i < el.length; i++) {
+      if (el[i].checked)
+        return el[i].value;
+    }
+  }
+
+  function readInteger(schema, name) {
+    var name1 = name+'_'+schema.type;
+    var el = document.getElementsByName(name1)[0];
+  }
+
+  function readNumber(schema, name) {
+    var name1 = name+'_'+schema.type;
+    var el = document.getElementsByName(name1)[0];
+  }
+
+  function readString(schema, name) {
+    var name1 = name+'_'+schema.type;
+    var el = document.getElementsByName(name1)[0];
+  }
+
+  //---------------
 
   function readObject(schema, name) {
     // console.log('--object--');
