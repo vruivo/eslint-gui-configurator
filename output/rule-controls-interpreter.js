@@ -18,12 +18,35 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   //------------------------------
 
   function read(schema, name) {
-
-    if (schema.type && schema.type === 'boolean') {
+    if (schema.enum) {
+      return readEnum(schema, name);
+    }
+    else if (schema.type && schema.type === 'boolean') {
       return readBoolean(schema, name);
+    }
+    else if (schema.type && schema.type === 'integer') {
+      return readInteger(schema, name);
+    }
+    else if (schema.type && schema.type === 'number') {
+      return readNumber(schema, name);
+    }
+    else if (schema.type && schema.type === 'string') {
+      return readString(schema, name);
     }
     else if (schema.type && schema.type === 'object') {
       return readObject(schema, name);
+    }
+    else if (schema.type && schema.type === 'array') {
+      return readArray(schema, name);
+    }
+    else if (schema.oneOf) {
+      return readOneOf(schema, name);
+    }
+    else if (schema.anyOf) {
+      return readAnyOf(schema, name);
+    }
+    else if (schema.type && schema.type === 'arrayEnum') {
+      return readArrayEnum(schema, name);
     }
   }
 
@@ -52,23 +75,25 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   function readInteger(schema, name) {
     var name1 = name+'_'+schema.type;
     var el = document.getElementsByName(name1)[0];
+    return parseInt(el.value);
   }
 
   function readNumber(schema, name) {
     var name1 = name+'_'+schema.type;
     var el = document.getElementsByName(name1)[0];
+    return parseInt(el.value);
   }
 
   function readString(schema, name) {
     var name1 = name+'_'+schema.type;
     var el = document.getElementsByName(name1)[0];
+    return el.value;
   }
 
-  //---------------
+  //------------------------------
 
   function readObject(schema, name) {
-    // console.log('--object--');
-    var name1 = name + '_';
+    var name1;// = name + '_';
     var obj = {};
     // var str = '{';
 
@@ -86,4 +111,64 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
     // str += '}';
     return obj;
   }
+
+  function readArray(schema, name) {
+    // var name1;// = name + '_';
+    var arr = [];
+
+    if (schema.properties) {
+      for (let prop in schema.properties) {
+        // name1 = name + '_' + prop;
+        arr.push(read(schema.properties[prop], name));
+      }
+    }
+
+    return arr;
+  }
+
+  //------------------------------
+
+  function readOneOf(schema, name) {
+    var name1 = name+'_oneOf';
+    var el = document.getElementsByName(name1);
+
+    for (var i = 0; i < el.length; i++) {
+      if (el[i].checked) {
+        return read(schema.oneOf[i], name1);
+      }
+    }
+  }
+
+  function readAnyOf(schema, name) {
+    var name1 = name+'_anyOf';
+    var el = document.getElementsByName(name1);
+
+    for (var i = 0; i < el.length; i++) {
+      if (el[i].checked) {
+        return read(schema.anyOf[i], name1);
+      }
+    }
+  }
+
+  //------------------------------
+
+  function readArrayEnum(schema, name) {
+    var name1 = name+'_'+schema.type;
+    var el = document.getElementsByName(name1);
+    var arr = [];
+
+    for (var i = 0; i < el.length; i++) {
+      if (el[i].checked) {
+        arr.push(el[i].value);
+      }
+    }
+    return arr;
+  }
+
+  function readArrayOneOf(schema, name) {
+  }
+
+  function readArrayAnyOf(schema, name) {
+  }
+
 }

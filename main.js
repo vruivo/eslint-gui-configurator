@@ -11,3 +11,6 @@ buildHTML(rules, 'output/index.html');
 //TODO: create text rules
 //TODO: generate output, and a big text box for preview
 //TODO: load config from file
+//
+//TODO: anyOf, arrayAnyOf change
+//TODO: null and empty values

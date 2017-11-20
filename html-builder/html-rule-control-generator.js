@@ -92,14 +92,14 @@ module.exports = function generateRuleControls(schema, sch_nr) {
       html += ' min="'+ spec.minimum +'"';
     if (spec.maximum != null)
       html += ' max="'+ spec.maximum +'"';
-    html += '>';
+    html += 'onchange="interpretControls(this)">';
     return html;
   }
 
   function readString(spec, name) {
     var name1 = name + '_' + spec.type;
     var html = '<input name="'+name1+'" type="text"';
-    html += '>';
+    html += 'onchange="interpretControls(this)">';
     return html;
   }
 
@@ -171,12 +171,8 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     var name1 = name + '_' + spec.type;
 
     for (let prop in spec.items) {
-      // html += '<tr>';
-      // html += '<td><input type="checkbox" name="arrayof'+ counter +'" > </td>'+
-      //         '<td>'+ spec.items[prop] +'</td>';
-      // html+= '</tr>';
-      html += '<input type="checkbox" name="'+name1+'" > '+
-              spec.items[prop];
+      html += '<input type="checkbox" name="' + name1 + '" value="' +spec.items[prop]+
+              '" onchange="interpretControls(this)"> '+ spec.items[prop];
     }
     html += '</tbody></table>';
     return html;
@@ -205,7 +201,7 @@ module.exports = function generateRuleControls(schema, sch_nr) {
 
     for (let prop in spec.items) {
       html += '<tr>';
-      html += '<td><input type="radio" name="'+name1+'" > </td>'+
+      html += '<td><input type="radio" name="'+name1+'" onchange="interpretControls(this)"> </td>'+
               '<td>'+ readParameter(spec.items[prop], name1) +'</td>';
       html += '<td>+</td>';
       html+= '</tr>';
@@ -218,12 +214,12 @@ module.exports = function generateRuleControls(schema, sch_nr) {
   function readOneOf(spec, name) {
     var html = '';
     // var counter = cc++;
-    var name1 = name + '_' + spec.type;
+    var name1 = name + '_oneOf';
 
     html += '<table><tbody>';
     spec.oneOf.forEach(function functionName(item) {
       html += '<tr>';
-      html += '<td><input type="radio" name="'+name1+'" > </td>'+
+      html += '<td><input type="radio" name="'+name1+'" onchange="interpretControls(this)"> </td>'+
               '<td>'+ readParameter(item, name1) +'</td>';
       html += '</tr>';
     });
@@ -235,7 +231,7 @@ module.exports = function generateRuleControls(schema, sch_nr) {
   function readAnyOf(spec, name) {
     var html = '';
     // var counter = cc++;
-    var name1 = name + '_' + spec.type;
+    var name1 = name + '_anyOf';
 
     html += '<table><tbody>';
     spec.anyOf.forEach(function functionName(item) {
