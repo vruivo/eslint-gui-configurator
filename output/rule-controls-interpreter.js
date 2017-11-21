@@ -1,18 +1,30 @@
 'use strict';
 
 function interpretControls(control) { // eslint-disable-line no-unused-vars
-  var div = closest(control, 'div.controls', 'body');  // eslint-disable-line no-undef
+  // var div = closest(control, 'div.controls', 'body');  // eslint-disable-line no-undef
+  const rule_nr = control.id.substring(0, control.id.indexOf('_'));
+  console.log(rule_nr);
+  var div = document.querySelector('div #'+56);
+  console.log(div);return ;
   var schema = div.dataset.schema;
   schema = schema.replace(/%22/g, '"');  // url decode "
   schema = JSON.parse(schema);
+  var level = document.getElementById(div.id + '_level').value;
 
-  var arr = [];
+  var arr = [level];
+  let val;
   schema.forEach(function functionName(param) {
-    arr.push(read(param, div.id));
+    val = read(param, div.id);
+    if (val != null)
+      arr.push(val);
   });
 
-  console.log('> ', JSON.stringify(arr));
-  console.log(arr);
+  // console.log(JSON.stringify(arr));
+  // console.log(arr);
+
+  var text_out = document.getElementById(div.id + '_text');
+  text_out.value = JSON.stringify(arr);
+
   return arr;
 
   //------------------------------
@@ -48,11 +60,20 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
     else if (schema.type && schema.type === 'arrayEnum') {
       return readArrayEnum(schema, name);
     }
+    else if (schema.type && schema.type === 'arrayOneOf') {
+      return readArrayOneOf(schema, name);
+    }
+    else if (schema.type && schema.type === 'arrayAnyOf') {
+      return readArrayAnyOf(schema, name);
+    }
   }
 
   //------------------------------
 
   function readEnum(schema, name) {
+    if (schema.enum.length === 1)
+      return schema.enum[0];
+
     var name1 = name+'_enum';
     var el = document.getElementsByName(name1);
 
@@ -75,55 +96,60 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   function readInteger(schema, name) {
     var name1 = name+'_'+schema.type;
     var el = document.getElementsByName(name1)[0];
-    return parseInt(el.value);
+    var val = parseInt(el.value);
+    return isNaN(val)?null:val;
   }
 
   function readNumber(schema, name) {
     var name1 = name+'_'+schema.type;
     var el = document.getElementsByName(name1)[0];
-    return parseInt(el.value);
+    var val = parseInt(el.value);
+    return isNaN(val)?null:val;
   }
 
   function readString(schema, name) {
     var name1 = name+'_'+schema.type;
     var el = document.getElementsByName(name1)[0];
-    return el.value;
+    var val = el.value;
+    return (val.length===0)?null:val;
   }
 
   //------------------------------
 
   function readObject(schema, name) {
-    var name1;// = name + '_';
+    var name1;
     var obj = {};
-    // var str = '{';
+    let val;
 
     if (schema.properties) {
       for (let prop in schema.properties) {
         name1 = name + '_' + prop;
-        // console.log('---prop: ' + name1);
-        // str += prop + ':';
-        // str += read(schema.properties[prop], name1);
-        // str += ', ';
-        obj[prop] = read(schema.properties[prop], name1);
+        val = read(schema.properties[prop], name1);
+        if (val != null) {
+          obj[prop] = val;
+        }
       }
     }
 
-    // str += '}';
-    return obj;
+    return (Object.keys(obj).length===0)?null:obj;
   }
 
   function readArray(schema, name) {
     // var name1;// = name + '_';
     var arr = [];
+    let val;
 
-    if (schema.properties) {
-      for (let prop in schema.properties) {
+    if (schema.items) {
+      for (let prop in schema.items) {
         // name1 = name + '_' + prop;
-        arr.push(read(schema.properties[prop], name));
+        val = read(schema.items[prop], name);
+        if (val != null) {
+          arr.push(val);
+        }
       }
     }
 
-    return arr;
+    return (arr.length)?arr:null;
   }
 
   //------------------------------
@@ -166,9 +192,37 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   }
 
   function readArrayOneOf(schema, name) {
+    var name1 = name+'_'+schema.type;
+    var el = document.getElementsByName(name1);
+    var arr = [];
+    let val;
+
+    for (var i = 0; i < el.length; i++) {
+      if (el[i].checked) {
+        val = read(schema.items[i], name1+'_'+i);
+        if (val != null) {
+          arr.push(val);
+        }
+      }
+    }
+    return (arr.length)?arr:null;
   }
 
   function readArrayAnyOf(schema, name) {
+    var name1 = name+'_'+schema.type;
+    var el = document.getElementsByName(name1);
+    var arr = [];
+    let val;
+
+    for (var i = 0; i < el.length; i++) {
+      if (el[i].checked) {
+        val = read(schema.items[i], name1+'_'+i);
+        if (val != null) {
+          arr.push(val);
+        }
+      }
+    }
+    return (arr.length)?arr:null;
   }
 
 }

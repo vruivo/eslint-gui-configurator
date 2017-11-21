@@ -31,17 +31,19 @@ module.exports = function htmlBuilder(rules, output_file) {
       rules_organized[category].push(rule);
     });
 
-    Object.keys(rules_organized).sort().forEach(function loopItems(category, cat_nr) {
+    var rule_nr = 0;
+    Object.keys(rules_organized).sort().forEach(function loopItems(category) {
       html += createRuleCategoryLine({category: category});
-      
-      rules_organized[category].forEach(function createHTML(rule, rule_nr) {
+
+      rules_organized[category].forEach(function createHTML(rule) {
         html += createRuleLine({
-          recommended: rule.recommended,
-          fixable: rule.fixable,
+          recommended: (rule.recommended)?rule.recommended:'',
+          fixable: (rule.fixable)?rule.fixable:'',
           url: rule.url,
           name: rule.name,
           description: rule.description,
-          controls: generateRuleControls(rule.schema, cat_nr+rule_nr)
+          select_id: rule_nr + '_level',
+          controls: generateRuleControls(rule.schema, rule_nr++)
         });
       });
     });

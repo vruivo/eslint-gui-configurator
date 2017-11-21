@@ -12,6 +12,8 @@ function toggleConfigVisibility(select) { // eslint-disable-line no-unused-vars
   else {
     hidden_tr.classList.add('hidden');
   }
+
+  interpretControls(select);  // eslint-disable-line no-undef
 }
 
 // https://stackoverflow.com/questions/14234560/javascript-how-to-get-parent-element-by-selector
@@ -36,4 +38,6 @@ function checkOnlyOne(checkbox) { // eslint-disable-line no-unused-vars
     if (check.checked === true && check !== checkbox)
       check.checked = false;
   });
+
+  interpretControls(checkbox);  // eslint-disable-line no-undef
 }

@@ -12,7 +12,7 @@
     ${description}
   </td>
   <td>
-    <select onchange="toggleConfigVisibility(this)">
+    <select id="${select_id}" onchange="toggleConfigVisibility(this)">
       <option value="off">off</option>
       <option value="warn">warn</option>
       <option value="error">error</option>

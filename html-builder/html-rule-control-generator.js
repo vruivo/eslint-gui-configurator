@@ -4,16 +4,20 @@
 
 module.exports = function generateRuleControls(schema, sch_nr) {
   var schema_str = JSON.stringify(schema);
-  var html = schema_str + '<br>';
+  var html = schema_str + '<br>';  // debug line
   schema_str = schema_str.replace(/"/g, '%22');  // url encode "
-  html += '<input type="text" width="100%" class="rule-text">';
+  html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
+  // text box with rule configuration
+  html += '<input id="'+sch_nr+'_text" type="text" width="100%" size="60" class="rule-text">';
+
   schema.forEach(function schemaReader(spec) {
-    html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
+    // html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
 
     html += readParameter(spec, ''+sch_nr);
 
-    html += '</div>';
+    // html += '</div>';
   });
+  html += '</div>';
   return html;
 
   //---------------------------------------------------------------
@@ -183,10 +187,11 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     // var counter = cc++;
     var name1 = name + '_' + spec.type;
 
-    for (let prop in spec.items) {
+
+    for (var i=0; i<spec.items.length; i++) {
       html += '<tr>';
       html += '<td><input type="checkbox" name="'+name1+'" onchange="checkOnlyOne(this)"> </td>'+
-              '<td>'+ readParameter(spec.items[prop], name1) +'</td>';
+              '<td>'+ readParameter(spec.items[i], name1+'_'+i) +'</td>';
       html += '<td>+</td>';
       html+= '</tr>';
     }
@@ -199,10 +204,11 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     // var counter = cc++;
     var name1 = name + '_' + spec.type;
 
-    for (let prop in spec.items) {
+    // for (let prop in spec.items) {
+    for (var i=0; i<spec.items.length; i++) {
       html += '<tr>';
       html += '<td><input type="radio" name="'+name1+'" onchange="interpretControls(this)"> </td>'+
-              '<td>'+ readParameter(spec.items[prop], name1) +'</td>';
+              '<td>'+ readParameter(spec.items[i], name1+'_'+i) +'</td>';
       html += '<td>+</td>';
       html+= '</tr>';
     }
