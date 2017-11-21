@@ -6,14 +6,14 @@ module.exports = function generateRuleControls(schema, sch_nr) {
   var schema_str = JSON.stringify(schema);
   var html = schema_str + '<br>';  // debug line
   schema_str = schema_str.replace(/"/g, '%22');  // url encode "
-  html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
+  html += '<div class="controls" id="'+sch_nr+'_rule" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
   // text box with rule configuration
   html += '<input id="'+sch_nr+'_text" type="text" width="100%" size="60" class="rule-text">';
 
   schema.forEach(function schemaReader(spec) {
     // html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
 
-    html += readParameter(spec, ''+sch_nr);
+    html += writeParameter(spec, ''+sch_nr);
 
     // html += '</div>';
   });
@@ -22,42 +22,42 @@ module.exports = function generateRuleControls(schema, sch_nr) {
 
   //---------------------------------------------------------------
 
-  function readParameter(spec, name) {
+  function writeParameter(spec, name) {
     if (spec.enum) {
-      return readEnum(spec, name);
+      return writeEnum(spec, name);
     }
     else if (spec.type && spec.type === 'boolean') {
-      return readBoolean(spec, name);
+      return writeBoolean(spec, name);
     }
     else if (spec.type && spec.type === 'integer') {
-      return readInteger(spec, name);
+      return writeInteger(spec, name);
     }
     else if (spec.type && spec.type === 'number') {
-      return readInteger(spec, name);
+      return writeInteger(spec, name);
     }
     else if (spec.type && spec.type === 'string') {
-      return readString(spec, name);
+      return writeString(spec, name);
     }
     else if (spec.type && spec.type === 'object') {
-      return readObject(spec, name);
+      return writeObject(spec, name);
     }
     else if (spec.type && spec.type === 'array') {
-      return readArray(spec, name);
+      return writeArray(spec, name);
     }
     else if (spec.type && spec.type === 'arrayEnum') {  // custom
-      return readArrayEnum(spec, name);
+      return writeArrayEnum(spec, name);
     }
     else if (spec.type && spec.type === 'arrayAnyOf') {  // custom
-      return readArrayAnyOf(spec, name);
+      return writeArrayAnyOf(spec, name);
     }
     else if (spec.type && spec.type === 'arrayOneOf') {  // custom
-      return readArrayOneOf(spec, name);
+      return writeArrayOneOf(spec, name);
     }
     else if (spec.oneOf) {    // choose 1
-      return readOneOf(spec, name);
+      return writeOneOf(spec, name);
     }
     else if (spec.anyOf) {    // 0 or 1
-      return readAnyOf(spec, name);
+      return writeAnyOf(spec, name);
     }
     else {
       throw 'Unknown parameter ' + spec;
@@ -66,11 +66,13 @@ module.exports = function generateRuleControls(schema, sch_nr) {
 
   //---------------------------------------------------------------
 
-  function readEnum(spec, name) {
+  function writeEnum(spec, name) {
     var html = '';
+    var name1 = name+'_enum';
     if (spec.enum.length > 1) {
       spec.enum.forEach(function functionName(item) {
-        html += '<input type="radio" name="'+name+'_enum" value="'+item+'" onchange="interpretControls(this)"> ' + item;
+        html += '<input type="radio" id="'+name1+'" name="'+name1+'" '+
+                'value="'+item+'" onchange="interpretControls(this)"> ' + item;
       });
     }
     else {
@@ -81,17 +83,19 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     return html;
   }
 
-  function readBoolean(spec, name) {
+  function writeBoolean(spec, name) {
     var name1 = name + '_' + spec.type;
-    var html = '<input type="radio" name="'+name1+'" value="true" checked onchange="interpretControls(this)"> true' +
-               '<input type="radio" name="'+name1+'" value="false" onchange="interpretControls(this)"> false';
+    var html = '<input type="radio" id="'+name1+'" name="'+name1+'" '+
+                  'value="true" checked onchange="interpretControls(this)"> true' +
+               '<input type="radio" id="'+name1+'" name="'+name1+'" '+
+                  'value="false" onchange="interpretControls(this)"> false';
     // cc++;
     return html;
   }
 
-  function readInteger(spec, name) {
+  function writeInteger(spec, name) {
     var name1 = name + '_' + spec.type;
-    var html = '<input name="'+name1+'" type="number"';
+    var html = '<input id="'+name1+'" name="'+name1+'" type="number"';
     if (spec.minimum != null)
       html += ' min="'+ spec.minimum +'"';
     if (spec.maximum != null)
@@ -100,15 +104,15 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     return html;
   }
 
-  function readString(spec, name) {
+  function writeString(spec, name) {
     var name1 = name + '_' + spec.type;
-    var html = '<input name="'+name1+'" type="text"';
+    var html = '<input id="'+name1+'" name="'+name1+'" type="text"';
     html += 'onchange="interpretControls(this)">';
     return html;
   }
 
 
-  function readObject(spec, name) {
+  function writeObject(spec, name) {
     // if (spec.properties == null && spec.additionalProperties == null) {
     //   throw 'Object without properties';
     // }
@@ -132,7 +136,7 @@ module.exports = function generateRuleControls(schema, sch_nr) {
       for (let prop in spec.properties) {
         // if (prop === 'anyOf' || prop === 'oneOf') {   // happens once, in operator-linebreak
         //   try {
-        //     spec.properties[prop] = readParameter(spec.properties);
+        //     spec.properties[prop] = writeParameter(spec.properties);
         //   } catch (e) {
         //     if (!spec.additionalProperties) {
         //       delete spec.properties;
@@ -145,7 +149,7 @@ module.exports = function generateRuleControls(schema, sch_nr) {
         // else
         html += '<tr>';
         html += '<td><span>' + prop + ': </span></td>';
-        html += '<td>'+ readParameter(spec.properties[prop], name+'_'+prop) +'</td>';
+        html += '<td>'+ writeParameter(spec.properties[prop], name+'_'+prop) +'</td>';
         html+= '</tr>';
         // html += '<br>';
       }
@@ -154,13 +158,13 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     return html;
   }
 
-  function readArray(spec, name) {
+  function writeArray(spec, name) {
     var html = '';
     html += '<table><tbody>';
     for (let prop in spec.items) {
       html += '<tr>';
       // html += '<td><span>' + prop + ': </span></td>';
-      html += '<td>'+ readParameter(spec.items[prop], name) +'</td>';
+      html += '<td>'+ writeParameter(spec.items[prop], name) +'</td>';
       if (spec.additionalItems != false && spec.maxItems != spec.items.length)
         html += '<td>+</td>';
       html+= '</tr>';
@@ -169,20 +173,21 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     return html;
   }
 
-  function readArrayEnum(spec, name) {
+  function writeArrayEnum(spec, name) {
     var html = '<table><tbody>';
     // var counter = cc++;
     var name1 = name + '_' + spec.type;
 
     for (let prop in spec.items) {
-      html += '<input type="checkbox" name="' + name1 + '" value="' +spec.items[prop]+
+      html += '<input type="checkbox" id="'+name1+'" name="' + name1 +
+              '" value="'+spec.items[prop] +
               '" onchange="interpretControls(this)"> '+ spec.items[prop];
     }
     html += '</tbody></table>';
     return html;
   }
 
-  function readArrayAnyOf(spec, name) {
+  function writeArrayAnyOf(spec, name) {
     var html = '<table><tbody>';
     // var counter = cc++;
     var name1 = name + '_' + spec.type;
@@ -190,8 +195,8 @@ module.exports = function generateRuleControls(schema, sch_nr) {
 
     for (var i=0; i<spec.items.length; i++) {
       html += '<tr>';
-      html += '<td><input type="checkbox" name="'+name1+'" onchange="checkOnlyOne(this)"> </td>'+
-              '<td>'+ readParameter(spec.items[i], name1+'_'+i) +'</td>';
+      html += '<td><input type="checkbox" id="'+name1+'" name="'+name1+'" onchange="checkOnlyOne(this)"> </td>'+
+              '<td>'+ writeParameter(spec.items[i], name1+'_'+i) +'</td>';
       html += '<td>+</td>';
       html+= '</tr>';
     }
@@ -199,7 +204,7 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     return html;
   }
 
-  function readArrayOneOf(spec, name) {
+  function writeArrayOneOf(spec, name) {
     var html = '<table><tbody>';
     // var counter = cc++;
     var name1 = name + '_' + spec.type;
@@ -207,8 +212,8 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     // for (let prop in spec.items) {
     for (var i=0; i<spec.items.length; i++) {
       html += '<tr>';
-      html += '<td><input type="radio" name="'+name1+'" onchange="interpretControls(this)"> </td>'+
-              '<td>'+ readParameter(spec.items[i], name1+'_'+i) +'</td>';
+      html += '<td><input type="radio" id="'+name1+'" name="'+name1+'" onchange="interpretControls(this)"> </td>'+
+              '<td>'+ writeParameter(spec.items[i], name1+'_'+i) +'</td>';
       html += '<td>+</td>';
       html+= '</tr>';
     }
@@ -217,7 +222,7 @@ module.exports = function generateRuleControls(schema, sch_nr) {
   }
 
 
-  function readOneOf(spec, name) {
+  function writeOneOf(spec, name) {
     var html = '';
     // var counter = cc++;
     var name1 = name + '_oneOf';
@@ -225,8 +230,8 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     html += '<table><tbody>';
     spec.oneOf.forEach(function functionName(item) {
       html += '<tr>';
-      html += '<td><input type="radio" name="'+name1+'" onchange="interpretControls(this)"> </td>'+
-              '<td>'+ readParameter(item, name1) +'</td>';
+      html += '<td><input type="radio" id="'+name1+'" name="'+name1+'" onchange="interpretControls(this)"> </td>'+
+              '<td>'+ writeParameter(item, name1) +'</td>';
       html += '</tr>';
     });
     html += '</tbody></table>';
@@ -234,7 +239,7 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     return html;
   }
 
-  function readAnyOf(spec, name) {
+  function writeAnyOf(spec, name) {
     var html = '';
     // var counter = cc++;
     var name1 = name + '_anyOf';
@@ -242,8 +247,8 @@ module.exports = function generateRuleControls(schema, sch_nr) {
     html += '<table><tbody>';
     spec.anyOf.forEach(function functionName(item) {
       html += '<tr>';
-      html += '<td><input type="checkbox" name="'+name1+'" onchange="checkOnlyOne(this)"> </td>'+
-              '<td>'+ readParameter(item, name1) +'</td>';
+      html += '<td><input type="checkbox" id="'+name1+'" name="'+name1+'" onchange="checkOnlyOne(this)"> </td>'+
+              '<td>'+ writeParameter(item, name1) +'</td>';
       html += '</tr>';
 
     });

@@ -18,6 +18,9 @@ input[type=number] {
 /*input[type=text] {
   max-width: 80px;
 }*/
+i {
+  color: #4b32c3;
+}
 .hidden1 {
   display: none;
 }

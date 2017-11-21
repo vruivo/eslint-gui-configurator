@@ -11,8 +11,6 @@ buildHTML(rules, 'output/index.html');
 //TODO: array add
 //TODO: load config from file
 //
-//TODO: create text rules: level
 //TODO: unravel arrays
-//
-//TODO: icons for fixable, recommended
+//TODO: color active
 //TODO: generate output -> big text box for preview

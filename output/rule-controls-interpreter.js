@@ -3,18 +3,19 @@
 function interpretControls(control) { // eslint-disable-line no-unused-vars
   // var div = closest(control, 'div.controls', 'body');  // eslint-disable-line no-undef
   const rule_nr = control.id.substring(0, control.id.indexOf('_'));
-  console.log(rule_nr);
-  var div = document.querySelector('div #'+56);
-  console.log(div);return ;
+
+  var div = document.getElementById(rule_nr+'_rule');
+
+
   var schema = div.dataset.schema;
   schema = schema.replace(/%22/g, '"');  // url decode "
   schema = JSON.parse(schema);
-  var level = document.getElementById(div.id + '_level').value;
+  var level = document.getElementById(rule_nr + '_level').value;
 
   var arr = [level];
   let val;
   schema.forEach(function functionName(param) {
-    val = read(param, div.id);
+    val = read(param, rule_nr);
     if (val != null)
       arr.push(val);
   });
@@ -22,7 +23,7 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   // console.log(JSON.stringify(arr));
   // console.log(arr);
 
-  var text_out = document.getElementById(div.id + '_text');
+  var text_out = document.getElementById(rule_nr + '_text');
   text_out.value = JSON.stringify(arr);
 
   return arr;

@@ -37,8 +37,8 @@ module.exports = function htmlBuilder(rules, output_file) {
 
       rules_organized[category].forEach(function createHTML(rule) {
         html += createRuleLine({
-          recommended: (rule.recommended)?rule.recommended:'',
-          fixable: (rule.fixable)?rule.fixable:'',
+          recommended: (rule.recommended)?'<i class="fa fa-star fa-lg"></i>':'',
+          fixable: (rule.fixable)?'<i class="fa fa-wrench fa-lg"></i>':'',
           url: rule.url,
           name: rule.name,
           description: rule.description,
