@@ -6,7 +6,7 @@ const generateRuleControls = require(__dirname + '/html-rule-control-generator')
 
 module.exports = function htmlBuilder(rules, output_file) {
 
-  const createHtmlPage = html_utils.loadTemplate(__dirname + '/html_base.htt');
+  const createHtmlPage = html_utils.loadTemplate(__dirname + '/templates/html_base.htt');
   const html = createHtmlPage({
     body: createRulesHtml(rules)
   });
@@ -18,8 +18,8 @@ module.exports = function htmlBuilder(rules, output_file) {
 
     var html = '<form autocomplete="off"><table style="margin: 0">\n<tbody>\n';
 
-    const createRuleLine = html_utils.loadTemplate(__dirname + '/rule_line.htt');
-    const createRuleCategoryLine = html_utils.loadTemplate(__dirname + '/rule_category.htt');
+    const createRuleLine = html_utils.loadTemplate(__dirname + '/templates/rule_line.htt');
+    const createRuleCategoryLine = html_utils.loadTemplate(__dirname + '/templates/rule_category.htt');
 
     var rules_organized = {};
     let category;
