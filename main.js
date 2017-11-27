@@ -12,5 +12,5 @@ buildHTML(rules, 'output/index.html');
 //TODO: load config from file
 //
 //TODO: unravel arrays
-//TODO: color active
+//TODO: rule line color highlight
 //TODO: generate output -> big text box for preview

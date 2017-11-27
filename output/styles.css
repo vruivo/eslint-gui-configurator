@@ -60,3 +60,9 @@ tr.rule-line td {
   display:inline-block;
   vertical-align: top;
 }*/
+.background-warning {
+  background-color: #ffff45;
+}
+.background-error {
+  background-color: red;
+}

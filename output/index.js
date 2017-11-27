@@ -8,9 +8,19 @@ function toggleConfigVisibility(select) { // eslint-disable-line no-unused-vars
 
   if (value != 'off') {
     hidden_tr.classList.remove('hidden');
+    if (value === 'warn') {
+      tr.classList.add('background-warning');
+      tr.classList.remove('background-error');
+    }
+    else if (value === 'error') {
+      tr.classList.add('background-error');
+      tr.classList.remove('background-warning');
+    }
   }
   else {
     hidden_tr.classList.add('hidden');
+    tr.classList.remove('background-warning');
+    tr.classList.remove('background-error');
   }
 
   interpretControls(select);  // eslint-disable-line no-undef
