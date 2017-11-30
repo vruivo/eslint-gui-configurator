@@ -4,7 +4,8 @@
 
 module.exports = function generateRuleControls(schema, sch_nr) {
   var schema_str = JSON.stringify(schema);
-  var html = schema_str + '<br>';  // debug line
+  var html = '';
+  html += '<span style="overflow-wrap:break-word;">'+schema_str + '</span>'+'<br>';  // debug line
   schema_str = schema_str.replace(/"/g, '%22');  // url encode "
   html += '<div class="controls" id="'+sch_nr+'_rule" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
   // text box with rule configuration

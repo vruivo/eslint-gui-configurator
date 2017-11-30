@@ -16,7 +16,8 @@ module.exports = function htmlBuilder(rules, output_file) {
 
   function createRulesHtml(rules) {
 
-    var html = '<form autocomplete="off"><table style="margin: 0">\n<tbody>\n';
+    var html = '<div style="position:fixed; width:80%; height:98%; overflow:scroll;"><form autocomplete="off">' +
+    '<table style="margin:0;">\n<tbody>\n';
 
     const createRuleLine = html_utils.loadTemplate(__dirname + '/templates/rule_line.htt');
     const createRuleCategoryLine = html_utils.loadTemplate(__dirname + '/templates/rule_category.htt');
@@ -48,7 +49,7 @@ module.exports = function htmlBuilder(rules, output_file) {
       });
     });
 
-    html+='</tbody>\n</table>\n</form>';
+    html+='</tbody>\n</table>\n</form></div>';
     return html;
   }
 
