@@ -9,6 +9,14 @@
   <script src="rule-controls-interpreter.js"></script>
 </head>
 <body>
-  ${body}
+  <div style="position:fixed; width:80%; height:98%; overflow:scroll;">
+    ${rules}
+  </div>
+  <div>
+    <form autocomplete="false">
+      <textarea id="xx" name="xx" style="width:18%; float:right">
+      </textarea>
+    </form>
+  </div>
 </body>
 </html>
