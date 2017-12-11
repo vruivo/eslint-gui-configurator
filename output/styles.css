@@ -46,6 +46,7 @@ tr.rule-line td {
   padding-left: 50px;
 }
 .rule-category {
+  border: 1px solid #4b32c3;
   background-color: #4b32c3;
   color: white;
   font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;

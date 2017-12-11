@@ -24,7 +24,8 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   // console.log(arr);
 
   var text_out = document.getElementById(rule_nr + '_text');
-  text_out.value = JSON.stringify(arr);
+  text_out.value = '"' +text_out.name+ '": ' + JSON.stringify(arr);
+  text_out.onchange();
 
   return arr;
 

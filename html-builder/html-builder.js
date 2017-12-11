@@ -44,7 +44,7 @@ module.exports = function htmlBuilder(rules, output_file) {
           name: rule.name,
           description: rule.description,
           select_id: rule_nr + '_level',
-          controls: generateRuleControls(rule.schema, rule_nr++)
+          controls: generateRuleControls(rule.schema, rule_nr++, rule.name)
         });
       });
     });

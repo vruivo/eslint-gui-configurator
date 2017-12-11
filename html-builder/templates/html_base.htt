@@ -9,14 +9,20 @@
   <script src="rule-controls-interpreter.js"></script>
 </head>
 <body>
-  <div style="position:fixed; width:80%; height:98%; overflow:scroll;">
+  <div style="position:fixed; width:99%; height:98%;">
+
+
+  <div style="width:80%; height:100%; float:left; overflow:scroll;">
     ${rules}
   </div>
-  <div>
-    <form autocomplete="false">
-      <textarea id="xx" name="xx" style="width:18%; float:right">
-      </textarea>
-    </form>
+  <div style="width:19%; height:100%; float:right">
+    <!-- <form autocomplete="off" style="width:100%; height:100%;"> -->
+      <textarea id="xx" name="xx" autocomplete="off" readonly="true"
+        style="width:95%; height:100%; resize:none; white-space:pre;
+        -moz-appearance:textfield; -webkit-appearance: textfield;"></textarea>
+    <!-- </form> -->
+  </div>
+
   </div>
 </body>
 </html>

@@ -13,4 +13,3 @@ buildHTML(rules, 'output/index.html');
 //
 //TODO: unravel arrays
 //TODO: rule line color highlight
-//TODO: generate output -> big text box for preview

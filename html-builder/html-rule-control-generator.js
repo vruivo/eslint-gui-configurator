@@ -2,14 +2,15 @@
 
 // var cc=0;
 
-module.exports = function generateRuleControls(schema, sch_nr) {
+module.exports = function generateRuleControls(schema, sch_nr, rule_name) {
   var schema_str = JSON.stringify(schema);
   var html = '';
   html += '<div style="overflow-wrap:break-word; width:1000px; color:green;">'+schema_str + '</div>'+'<br>';  // debug line
   schema_str = schema_str.replace(/"/g, '%22');  // url encode "
   html += '<div class="controls" id="'+sch_nr+'_rule" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
   // text box with rule configuration
-  html += '<input id="'+sch_nr+'_text" type="text" width="100%" size="60" class="rule-text">';
+  html += '<input id="'+sch_nr+'_text" name="'+rule_name+'" type="text" width="100%" size="60"' +
+    'class="rule-text" readonly="true" onchange="updateOutput(this)">';
 
   schema.forEach(function schemaReader(spec) {
     // html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
