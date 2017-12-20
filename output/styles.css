@@ -30,9 +30,9 @@ i {
 .rule-line {
   border-top: 2px solid blueviolet;
 }
-tr.rule-line:hover {
+/*tr.rule-line:hover {
   background-color: #F9F9F9;
-}
+}*/
 tr.rule-line td {
   padding:  6px 12px;
 }
@@ -61,9 +61,18 @@ tr.rule-line td {
   display:inline-block;
   vertical-align: top;
 }*/
-.background-warning {
-  background-color: #ffff45;
+.rule-off:hover {
+  background-color: #F9F9F9;
 }
-.background-error {
+.rule-warning {
+  background-color: #ffff4d;
+}
+.rule-warning:hover {
+  background-color: yellow;
+}
+.rule-error {
+  background-color: #ff4d4d;
+}
+.rule-error:hover {
   background-color: red;
 }

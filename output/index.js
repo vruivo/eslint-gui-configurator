@@ -9,18 +9,21 @@ function toggleConfigVisibility(select) { // eslint-disable-line no-unused-vars
   if (value != 'off') {
     hidden_tr.classList.remove('hidden');
     if (value === 'warn') {
-      tr.classList.add('background-warning');
-      tr.classList.remove('background-error');
+      tr.classList.add('rule-warning');
+      tr.classList.remove('rule-error');
+      tr.classList.remove('rule-off');
     }
     else if (value === 'error') {
-      tr.classList.add('background-error');
-      tr.classList.remove('background-warning');
+      tr.classList.add('rule-error');
+      tr.classList.remove('rule-warning');
+      tr.classList.remove('rule-off');
     }
   }
   else {
     hidden_tr.classList.add('hidden');
-    tr.classList.remove('background-warning');
-    tr.classList.remove('background-error');
+    tr.classList.add('rule-off');
+    tr.classList.remove('rule-warning');
+    tr.classList.remove('rule-error');
   }
 
   interpretControls(select);  // eslint-disable-line no-undef
@@ -55,17 +58,21 @@ function checkOnlyOne(checkbox) { // eslint-disable-line no-unused-vars
 var rules_output_arr = [];
 
 function updateOutput(el) {  // eslint-disable-line no-unused-vars
+  // update final output text box
   const eloutput = document.getElementById('xx');
   const rule_nr = Number(el.id.substring(0, el.id.indexOf('_')));
-  
+
   rules_output_arr[rule_nr] = el.value;
 
   var str = '{\n';
   str += '  "rules": {\n';
 
   rules_output_arr.forEach(function(val, i) {
-    str += '    ' + val;
-    str += (i !== rules_output_arr.length-1)? ',\n' : '\n';
+    if (val != null && typeof val === 'string' && val.length > 0) {
+      str += '    ' + val;
+      // if not last rule add a comma
+      str += (i !== rules_output_arr.length-1)? ',\n' : '\n';
+    }
   });
 
   str += '  }\n';

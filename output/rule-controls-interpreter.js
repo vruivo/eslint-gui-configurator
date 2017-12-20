@@ -1,10 +1,12 @@
 'use strict';
 
 function interpretControls(control) { // eslint-disable-line no-unused-vars
+  // update rule output text box
   // var div = closest(control, 'div.controls', 'body');  // eslint-disable-line no-undef
   const rule_nr = control.id.substring(0, control.id.indexOf('_'));
 
   var div = document.getElementById(rule_nr+'_rule');
+  var text_out = document.getElementById(rule_nr + '_text');
 
 
   var schema = div.dataset.schema;
@@ -12,22 +14,35 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   schema = JSON.parse(schema);
   var level = document.getElementById(rule_nr + '_level').value;
 
+  if (level === 'off') {
+    text_out.value = '';
+    text_out.onchange(); // also update final output text box
+    return;
+  }
+
   var arr = [level];
   let val;
   schema.forEach(function functionName(param) {
     val = read(param, rule_nr);
-    if (val != null)
-      arr.push(val);
+    if (val != null) {
+      if (Array.isArray(val)) { // unravel first-level arrays
+        val.forEach(function unravel(item){
+          arr.push(item);
+        });
+      }
+      else {
+        arr.push(val);
+      }
+    }
   });
 
   // console.log(JSON.stringify(arr));
   // console.log(arr);
 
-  var text_out = document.getElementById(rule_nr + '_text');
   text_out.value = '"' +text_out.name+ '": ' + JSON.stringify(arr);
-  text_out.onchange();
+  text_out.onchange(); // also update final output text box
 
-  return arr;
+  return;
 
   //------------------------------
 

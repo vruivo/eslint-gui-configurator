@@ -1,4 +1,4 @@
-<tr class="rule-line">
+<tr class="rule-line rule-off">
   <td title="recommended" style="width:1%">
     ${recommended}
   </td>

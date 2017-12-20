@@ -11,5 +11,4 @@ buildHTML(rules, 'output/index.html');
 //TODO: array add
 //TODO: load config from file
 //
-//TODO: unravel arrays
-//TODO: rule line color highlight
+//TODO: show filter
