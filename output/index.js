@@ -80,3 +80,40 @@ function updateOutput(el) {  // eslint-disable-line no-unused-vars
 
   eloutput.value = str;
 }
+
+function toggleViewFilter(el) {  // eslint-disable-line no-unused-vars
+  var filter = el.value;
+  var rules = document.getElementById('rules_table').getElementsByClassName('rule-line');
+  var controls = document.getElementById('rules_table').getElementsByClassName('rule-controls-line');
+
+  // hide all controls
+  Array.prototype.forEach.call(controls, function aa(el) {
+    el.classList.add('hidden');
+  });
+
+  Array.prototype.forEach.call(rules, function aa(el) {
+    if (filter === 'fixable') {
+      showElement(el, (el.dataset.isFixable === 'true'));
+    }
+    if (filter === 'recommended') {
+      showElement(el, (el.dataset.isRecommended === 'true'));
+    }
+    if (filter === 'recommended_fixable') {
+      showElement(el, (el.dataset.isRecommended === 'true') || (el.dataset.isFixable === 'true'));
+    }
+    if (filter === 'all') {
+      showElement(el, true);
+    }
+  });
+
+  function showElement(el, show) {
+    if (show === true) {
+      el.classList.remove('hidden');
+      // re-show controls if needed
+      toggleConfigVisibility(el.getElementsByTagName('select')[0]);
+    }
+    else {
+      el.classList.add('hidden');
+    }
+  }
+}

@@ -13,6 +13,13 @@
 
 
   <div style="width:80%; height:100%; float:left; overflow:scroll;">
+    View: <select id="view-filter" onchange="toggleViewFilter(this)" style="margin-bottom:1em" autocomplete="off">
+      <option value="all">All</option>
+      <option value="recommended_fixable">Recommended+Fixable</option>
+      <option value="recommended">Recommended</option>
+      <option value="fixable">Fixable</option>
+    <select>
+
     ${rules}
   </div>
   <div style="width:19%; height:100%; float:right">

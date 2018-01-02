@@ -1,4 +1,4 @@
-<tr class="rule-line rule-off">
+<tr class="rule-line rule-off" data-is-recommended="${isrecommended}" data-is-fixable="${isfixable}">
   <td title="recommended" style="width:1%">
     ${recommended}
   </td>
@@ -20,8 +20,8 @@
   </td>
 </tr>
 
-<tr class="hidden">
-  <td colspan="5" class="rule-controls-line">
+<tr class="rule-controls-line hidden">
+  <td colspan="5">
     ${controls}
   </td>
 </tr>

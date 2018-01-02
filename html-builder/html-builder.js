@@ -17,7 +17,7 @@ module.exports = function htmlBuilder(rules, output_file) {
   function createRulesHtml(rules) {
 
     var html = '<form autocomplete="off">' +
-    '<table style="margin:0;">\n<tbody>\n';
+    '<table id="rules_table" style="margin:0;">\n<tbody>\n';
 
     const createRuleLine = html_utils.loadTemplate(__dirname + '/templates/rule_line.htt');
     const createRuleCategoryLine = html_utils.loadTemplate(__dirname + '/templates/rule_category.htt');
@@ -38,6 +38,8 @@ module.exports = function htmlBuilder(rules, output_file) {
 
       rules_organized[category].forEach(function createHTML(rule) {
         html += createRuleLine({
+          isrecommended: (rule.recommended)? true:false,
+          isfixable: (rule.fixable)? true:false,
           recommended: (rule.recommended)?'<i class="fa fa-star fa-lg"></i>':'',
           fixable: (rule.fixable)?'<i class="fa fa-wrench fa-lg"></i>':'',
           url: rule.url,
