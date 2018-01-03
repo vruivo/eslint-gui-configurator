@@ -13,12 +13,17 @@
 
 
   <div style="width:80%; height:100%; float:left; overflow:scroll;">
+    <h3 style="margin-bottom:0.5em">Environments:</h3>
+    ${environments}
+
+    <h3 style="margin-bottom:0.5em; margin-top:2.5em">Rules:</h3>
     View: <select id="view-filter" onchange="toggleViewFilter(this)" style="margin-bottom:1em" autocomplete="off">
       <option value="all">All</option>
       <option value="recommended_fixable">Recommended+Fixable</option>
       <option value="recommended">Recommended</option>
       <option value="fixable">Fixable</option>
     <select>
+    <br>
 
     ${rules}
   </div>

@@ -87,11 +87,11 @@ function toggleViewFilter(el) {  // eslint-disable-line no-unused-vars
   var controls = document.getElementById('rules_table').getElementsByClassName('rule-controls-line');
 
   // hide all controls
-  Array.prototype.forEach.call(controls, function aa(el) {
+  Array.prototype.forEach.call(controls, function hideControls(el) {
     el.classList.add('hidden');
   });
 
-  Array.prototype.forEach.call(rules, function aa(el) {
+  Array.prototype.forEach.call(rules, function showSelected(el) {
     if (filter === 'fixable') {
       showElement(el, (el.dataset.isFixable === 'true'));
     }
@@ -116,4 +116,16 @@ function toggleViewFilter(el) {  // eslint-disable-line no-unused-vars
       el.classList.add('hidden');
     }
   }
+}
+
+
+function envUpdate() {
+  var envs_grp = document.getElementsByName('environments');
+  var envs = [];
+  Array.prototype.forEach.call(envs_grp, function (env) {
+    if (env.checked) {
+      envs.push(env.value);
+    }
+  });
+  return envs;
 }

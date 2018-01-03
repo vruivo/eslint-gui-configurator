@@ -4,20 +4,34 @@ const fs = require('fs');
 const html_utils = require(__dirname + '/node-html-utils');
 const generateRuleControls = require(__dirname + '/html-rule-control-generator');
 
-module.exports = function htmlBuilder(rules, output_file) {
+module.exports = function htmlBuilder(conf, output_file) {
+  const rules = conf.rules;
+  const environments = conf.environments;
 
+  // create the file
   const createHtmlPage = html_utils.loadTemplate(__dirname + '/templates/html_base.htt');
   const html = createHtmlPage({
-    rules: createRulesHtml(rules)
+    rules: createRulesHtml(rules),
+    environments: createEnvironmentsHtml(environments)
   });
   fs.writeFileSync(output_file, html);
 
+  // helper function
+  function createEnvironmentsHtml(environments) {
+    var html = '<form autocomplete="off">';
+    environments.forEach(function functionName(env) {
+      html += '<div style="display:inline; margin-right:1em;">' +
+        '<input type="checkbox" name="environments" value="'+env+'" onchange="envUpdate()">'+env +
+        '</div>';
+    });
+    html += '</form>';
+    return html;
+  }
 
-
+  // helper function
   function createRulesHtml(rules) {
-
     var html = '<form autocomplete="off">' +
-    '<table id="rules_table" style="margin:0;">\n<tbody>\n';
+      '<table id="rules_table" style="margin:0;">\n<tbody>\n';
 
     const createRuleLine = html_utils.loadTemplate(__dirname + '/templates/rule_line.htt');
     const createRuleCategoryLine = html_utils.loadTemplate(__dirname + '/templates/rule_category.htt');
