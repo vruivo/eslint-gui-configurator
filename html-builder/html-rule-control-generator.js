@@ -10,7 +10,7 @@ module.exports = function generateRuleControls(schema, sch_nr, rule_name) {
   html += '<div class="controls" id="'+sch_nr+'_rule" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';
   // text box with rule configuration
   html += '<input id="'+sch_nr+'_text" name="'+rule_name+'" type="text" width="100%" size="60"' +
-    'class="rule-text" readonly="true" onchange="updateOutput(this)">';
+    'class="rule-text" readonly="true" onchange="updateRule(this)">';
 
   schema.forEach(function schemaReader(spec) {
     // html += '<div class="controls" id="'+sch_nr+'" data-schema="'+schema_str+'" style="border: 1px solid #aaa; min-height:5px; margin-top: 3px;">';

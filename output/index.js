@@ -56,17 +56,30 @@ function checkOnlyOne(checkbox) { // eslint-disable-line no-unused-vars
 }
 
 var rules_output_arr = [];
+var environments_output_arr = [];
 
-function updateOutput(el) {  // eslint-disable-line no-unused-vars
-  // update final output text box
-  const eloutput = document.getElementById('xx');
+function updateRule(el) {  // eslint-disable-line no-unused-vars
   const rule_nr = Number(el.id.substring(0, el.id.indexOf('_')));
-
   rules_output_arr[rule_nr] = el.value;
 
-  var str = '{\n';
-  str += '  "rules": {\n';
+  updateOutput();
+}
 
+function updateOutput() {
+  // update final output text box
+  const eloutput = document.getElementById('xx');
+
+  var str = '{\n';
+
+  str += '  "env": {\n';
+  environments_output_arr.forEach(function(val, i) {
+    str += '    "' + val + '": true';
+    // if not last rule add a comma
+    str += (i !== environments_output_arr.length-1)? ',\n' : '\n';
+  });
+  str += '  },\n';
+
+  str += '  "rules": {\n';
   rules_output_arr.forEach(function(val, i) {
     if (val != null && typeof val === 'string' && val.length > 0) {
       str += '    ' + val;
@@ -74,8 +87,8 @@ function updateOutput(el) {  // eslint-disable-line no-unused-vars
       str += (i !== rules_output_arr.length-1)? ',\n' : '\n';
     }
   });
-
   str += '  }\n';
+
   str += '}';
 
   eloutput.value = str;
@@ -119,13 +132,16 @@ function toggleViewFilter(el) {  // eslint-disable-line no-unused-vars
 }
 
 
-function envUpdate() {
+function updateEnv() {  // eslint-disable-line no-unused-vars
   var envs_grp = document.getElementsByName('environments');
-  var envs = [];
+  // var envs = [];
+  environments_output_arr.length = 0;
   Array.prototype.forEach.call(envs_grp, function (env) {
     if (env.checked) {
-      envs.push(env.value);
+      environments_output_arr.push(env.value);
     }
   });
-  return envs;
+  // return envs;
+  // environments_output_arr[000] = 'aa';
+  updateOutput();
 }

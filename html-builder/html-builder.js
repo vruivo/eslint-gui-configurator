@@ -21,7 +21,7 @@ module.exports = function htmlBuilder(conf, output_file) {
     var html = '<form autocomplete="off">';
     environments.forEach(function functionName(env) {
       html += '<div style="display:inline; margin-right:1em;">' +
-        '<input type="checkbox" name="environments" value="'+env+'" onchange="envUpdate()">'+env +
+        '<input type="checkbox" name="environments" value="'+env+'" onchange="updateEnv()">'+env +
         '</div>';
     });
     html += '</form>';

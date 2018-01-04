@@ -14,4 +14,3 @@ buildHTML({rules, environments}, 'output/index.html');
 //TODO: array add
 //TODO: load config from file
 //
-//TODO: environments
