@@ -88,11 +88,11 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
   //------------------------------
 
   function readEnum(schema, name) {
-    if (schema.enum.length === 1)
-      return schema.enum[0];
-
     var name1 = name+'_enum';
     var el = document.getElementsByName(name1);
+
+    if (el.length === 1 && el[0].tagName.toLowerCase() === 'span')
+      return el[0].textContent;//schema.enum[0];
 
     for (var i = 0; i < el.length; i++) {
       if (el[i].checked)
@@ -153,13 +153,14 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
 
   function readArray(schema, name) {
     // var name1;// = name + '_';
+    var name1 = name + '_array';
     var arr = [];
     let val;
 
     if (schema.items) {
       for (let prop in schema.items) {
         // name1 = name + '_' + prop;
-        val = read(schema.items[prop], name);
+        val = read(schema.items[prop], name1+prop);
         if (val != null) {
           arr.push(val);
         }
@@ -188,7 +189,7 @@ function interpretControls(control) { // eslint-disable-line no-unused-vars
 
     for (var i = 0; i < el.length; i++) {
       if (el[i].checked) {
-        return read(schema.anyOf[i], name1);
+        return read(schema.anyOf[i], name1+i);
       }
     }
   }

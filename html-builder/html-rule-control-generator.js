@@ -78,7 +78,10 @@ module.exports = function generateRuleControls(schema, sch_nr, rule_name) {
       });
     }
     else {
-      html = spec.enum[0];
+      // html = spec.enum[0];
+      var item = spec.enum[0];
+      html = '<input type="checkbox" id="'+name1+'" name="'+name1+'" '+
+             'value="'+item+'" onchange="interpretControls(this)"> ' + item;
     }
 
     // cc++;
@@ -162,11 +165,19 @@ module.exports = function generateRuleControls(schema, sch_nr, rule_name) {
 
   function writeArray(spec, name) {
     var html = '';
+    var name1 = name + '_' + spec.type;
     html += '<table><tbody>';
     for (let prop in spec.items) {
       html += '<tr>';
       // html += '<td><span>' + prop + ': </span></td>';
-      html += '<td>'+ writeParameter(spec.items[prop], name) +'</td>';
+      if (spec.maxItems === 1 && spec.items[prop].enum && spec.items[prop].enum.length === 1) {
+        // console.log('__', spec.items[prop]);
+        var ename = name1 + prop + '_enum';
+        html += '<td><span id="'+ename+'" name="'+ename+'"">'+ spec.items[prop].enum[0] +'</span></td>';
+      }
+      else {
+        html += '<td>'+ writeParameter(spec.items[prop], name1+prop) +'</td>';
+      }
       if (spec.additionalItems != false && spec.maxItems != spec.items.length)
         html += '<td>+</td>';
       html+= '</tr>';
@@ -247,10 +258,10 @@ module.exports = function generateRuleControls(schema, sch_nr, rule_name) {
     var name1 = name + '_anyOf';
 
     html += '<table><tbody>';
-    spec.anyOf.forEach(function functionName(item) {
+    spec.anyOf.forEach(function functionName(item, i) {
       html += '<tr>';
       html += '<td><input type="checkbox" id="'+name1+'" name="'+name1+'" onchange="checkOnlyOne(this)"> </td>'+
-              '<td>'+ writeParameter(item, name1) +'</td>';
+              '<td>'+ writeParameter(item, name1+i) +'</td>';
       html += '</tr>';
 
     });

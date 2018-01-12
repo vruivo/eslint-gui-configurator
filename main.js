@@ -10,7 +10,7 @@ var environments = readEnvironments();
 buildHTML({rules, environments}, 'output/index.html');
 
 
-//TODO: sortable array
 //TODO: array add
+//TODO: sortable array
 //TODO: load config from file
 //
