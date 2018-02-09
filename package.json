@@ -1,14 +1,14 @@
 {
-  "name": "hello-eslint",
-  "version": "1.0.0",
-  "description": "simple app with eslint",
+  "name": "eslint-gui-configurator",
+  "version": "0.8.0",
+  "description": "create an eslint configuration file using the browser",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "(./node_modules/.bin/eslint . 2>/dev/null) || (eslint . 2>/dev/null)"
   },
   "keywords": [
-    "eslint"
+    "eslint gui"
   ],
   "author": "Vitor Ruivo",
   "license": "ISC",
