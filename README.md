@@ -16,3 +16,7 @@
  * fix array controls
  * save output to a file
  * automatically check eslint git repository for changes and build new version
+
+
+### Screenshots:  
+![eslint-gui_20180208](https://user-images.githubusercontent.com/17187114/36114425-ebeec192-1027-11e8-80ea-963ea7335d82.png)
